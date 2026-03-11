@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-The ASCII Art Generator is a feature-rich command-line application written in Go. It converts input strings into graphical ASCII-art using predefined banner files, with support for text colorization, output alignment, and file export.
+The ASCII Art Generator is a feature-rich application written in Go. It converts input strings into graphical ASCII-art using predefined banner files, with support for text colorization, output alignment, and file export. The project provides both a **command-line interface** and a **web interface** for generating ASCII art.
 
 The program must render letters, numbers, spaces, special characters, and newline sequences (`\n`) according to the format defined in the provided banner files.
 
@@ -18,6 +18,7 @@ The program must render letters, numbers, spaces, special characters, and newlin
 - **Colorize output** based on user input (whole string or substrings).
 - **Export output** to a file.
 - **Align text** (left, center, right, justify) relative to terminal size.
+- **Web interface** for browser-based ASCII art generation.
 - Ensure output strictly matches expected formatting examples.
 - Maintain clean, modular, and testable Go code.
 
@@ -35,6 +36,7 @@ The program must render letters, numbers, spaces, special characters, and newlin
 - Applying ANSI color codes to output.
 - Writing output to files.
 - Detecting terminal window size for alignment.
+- Web interface with HTTP server, HTML form, and template rendering.
 - Supporting:
   - Uppercase letters
   - Lowercase letters
@@ -49,7 +51,6 @@ The program must render letters, numbers, spaces, special characters, and newlin
 - Generating ASCII art algorithmically.
 - Editing or modifying banner files.
 - Supporting characters outside ASCII 32–126.
-- GUI or web interface.
 
 ---
 
@@ -153,6 +154,35 @@ Output must match provided examples exactly.
 
 ---
 
+### 4.8 Web Interface
+
+- **Entrypoint:** `cmd/ascii-art-web/main.go`
+- **Port:** HTTP server listening on `:8080`.
+- **Routes:**
+  - `GET /` — Serves the home page with an ASCII art generation form.
+  - `POST /ascii-art` — Accepts form input, generates ASCII art, and returns the result.
+  - `/assets/` — Serves static files (background image, etc.).
+- **Template:** `templates/index.html` rendered via Go `html/template`.
+- **Form Fields:**
+  - `text` (textarea) — The input string to convert.
+  - `banner` (radio buttons) — Banner selection: `standard`, `shadow`, `thinkertoy`.
+- **Input Validation:**
+  - Text and banner must not be empty (→ 400 Bad Request).
+  - Banner must be one of the three valid options (→ 400 Bad Request).
+  - Characters must be within ASCII 32–126 or newline (→ 400 Bad Request).
+- **Error Handling:**
+  - Banner file not found → 404 Not Found.
+  - Failed banner load or render → 500 Internal Server Error.
+  - Invalid HTTP method on `/ascii-art` → 405 Method Not Allowed.
+  - Unknown path on `/` → 404 Not Found.
+- **Behavior:**
+  - On `GET /`, the form defaults to the `standard` banner.
+  - On successful `POST`, the result is displayed below the form.
+  - On error, an error message is displayed below the form.
+  - The form retains the user's input and banner selection after submission.
+
+---
+
 ### 4.7 Error Handling
 
 The program must handle:
@@ -198,6 +228,8 @@ The project is considered complete when:
 - **Output flag correctly writes to files.**
 - **Alignment flag correctly positions text based on terminal width.**
 - **Banner argument correctly switches fonts.**
+- **Web interface serves the form, processes input, and displays results.**
+- **Web interface returns correct HTTP status codes for all error conditions.**
 - Unit tests pass.
 - Code is clean and modular.
 - No banner data is hardcoded.
@@ -230,6 +262,8 @@ The project is considered complete when:
 - Add performance optimizations.
 - Add additional ASCII fonts.
 - Add integration tests.
+- Add file export/download from web interface.
+- Add live preview (AJAX-based rendering without full page reload).
 
 ### 11. Misc.
 When Unsure ask for confirmation
