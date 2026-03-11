@@ -25,26 +25,31 @@
         .color-picker-group { margin-bottom: 20px; }
         .color-picker-wrapper {
             display: flex;
-            align-items: flex-start;
-            gap: 20px;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .wheel-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .wheel-container {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 140px;
+            height: 140px;
             flex-shrink: 0;
         }
         #colorWheel {
             border-radius: 50%;
             cursor: crosshair;
-            width: 200px;
-            height: 200px;
+            width: 140px;
+            height: 140px;
             box-shadow: 0 0 8px rgba(0,0,0,0.6);
         }
         .wheel-cursor {
             position: absolute;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border: 2px solid #fff;
             border-radius: 50%;
             pointer-events: none;
@@ -52,32 +57,31 @@
             transform: translate(-50%, -50%);
             display: none;
         }
-        .color-controls {
+        .lightness-slider-group {
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            flex: 1;
-            min-width: 0;
-        }
-        .lightness-slider-group label {
-            margin-bottom: 4px;
-            font-size: 13px;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 40px;
+            height: 140px;
         }
         #lightnessSlider {
             -webkit-appearance: none;
             appearance: none;
-            width: 100%;
+            width: 120px;
             height: 14px;
             border-radius: 7px;
             outline: none;
             cursor: pointer;
             border: 1px solid #555;
+            transform: rotate(-90deg);
         }
         #lightnessSlider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: #fff;
             border: 2px solid #444;
@@ -85,8 +89,8 @@
             box-shadow: 0 0 4px rgba(0,0,0,0.5);
         }
         #lightnessSlider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: #fff;
             border: 2px solid #444;
@@ -117,8 +121,8 @@
             width: 100px;
         }
         .btn-reset-color {
-            background: #555;
-            color: #ccc;
+            background: #b19cd9;
+            color: white;
             padding: 6px 14px;
             border: none;
             border-radius: 4px;
@@ -126,7 +130,7 @@
             font-size: 13px;
             transition: background 0.2s;
         }
-        .btn-reset-color:hover { background: #666; }
+        .btn-reset-color:hover { background: #9d7fd1; }
     </style>
 </head>
 <body>
@@ -150,20 +154,19 @@
             <div class="color-picker-group">
                 <label>Pick a Color:</label>
                 <div class="color-picker-wrapper">
-                    <div class="wheel-container">
-                        <canvas id="colorWheel" width="200" height="200"></canvas>
-                        <div class="wheel-cursor" id="wheelCursor"></div>
-                    </div>
-                    <div class="color-controls">
+                    <div class="wheel-row">
+                        <div class="wheel-container">
+                            <canvas id="colorWheel" width="140" height="140"></canvas>
+                            <div class="wheel-cursor" id="wheelCursor"></div>
+                        </div>
                         <div class="lightness-slider-group">
-                            <label for="lightnessSlider">Lightness</label>
                             <input type="range" id="lightnessSlider" min="10" max="90" value="50">
                         </div>
-                        <div class="color-preview-row">
-                            <div id="colorSwatch"></div>
-                            <input type="text" id="colorHex" value="#e0e0e0" readonly>
-                            <button type="button" class="btn-reset-color" id="resetColorBtn">Reset</button>
-                        </div>
+                    </div>
+                    <div class="color-preview-row">
+                        <div id="colorSwatch"></div>
+                        <input type="text" id="colorHex" value="#e0e0e0" readonly>
+                        <button type="button" class="btn-reset-color" id="resetColorBtn">Reset</button>
                     </div>
                 </div>
                 <input type="hidden" name="color" id="colorInput" value="{{.Color}}">
