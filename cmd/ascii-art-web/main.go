@@ -15,6 +15,7 @@ type PageData struct {
 	Banner string
 	Result string
 	Error  string
+	Color  string
 }
 
 var tmpl *template.Template
@@ -46,10 +47,12 @@ func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 
 	text := r.FormValue("text")
 	bannerName := r.FormValue("banner")
+	color := r.FormValue("color")
 
 	data := PageData{
 		Input:  text,
 		Banner: bannerName,
+		Color:  color,
 	}
 
 	if text == "" || bannerName == "" {
