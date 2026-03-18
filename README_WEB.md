@@ -8,7 +8,9 @@ ASCII Art Web is a web-based version of the ASCII art generator. It provides a g
 
 ## Authors
 
-- panokatos
+- pkallige
+- ipapigki
+- nbougial
 
 ## Usage
 
