@@ -24,6 +24,61 @@ Task Expansion: The assistant expanded the previous high-level breakdown into de
 - `tasks/task_03_rendering.md`: Detailed the TDD cycle for the rendering logic and multi-line support (Dev 3).
 
 Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "ok commit the changes now with seperate commits"
+
+AI Assistant Output & Actions:
+
+Git Workflow:
+- Reviewed the working tree to identify the current uncommitted web refactor and test files plus the required activity log update.
+- Chose a two-commit split: one commit for the web code changes and one commit for the documentation log update.
+- Prepared to stage code files separately from `docs/logs/ai.log` so the commits remain focused and easy to review.
+
+Planned Commits:
+- Code commit: web API/refactor and tests under `cmd/ascii-art-web/`.
+- Documentation commit: append the required session history to `docs/logs/ai.log`.
+
+Verification:
+- No additional tests were run in this step because the refactor had already been verified before the commit workflow began.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "ok then, do it"
+
+AI Assistant Output & Actions:
+
+Refactor:
+- Refactored `cmd/ascii-art-web/main.go` to keep only route registration and server startup logic.
+- Created `cmd/ascii-art-web/types.go` for shared web request/response and page data types.
+- Created `cmd/ascii-art-web/template.go` for template loading helpers.
+- Created `cmd/ascii-art-web/handlers.go` for the HTML and JSON HTTP handlers plus JSON response writing.
+- Created `cmd/ascii-art-web/service.go` for shared ASCII-art processing, validation, banner loading fallbacks, and render orchestration.
+- Preserved existing route behavior for `/`, `/ascii-art`, `/api/ascii-art`, and `/assets/`.
+
+Formatting:
+- Ran `gofmt -w cmd/ascii-art-web/main.go cmd/ascii-art-web/types.go cmd/ascii-art-web/template.go cmd/ascii-art-web/handlers.go cmd/ascii-art-web/service.go cmd/ascii-art-web/main_test.go`.
+
+Verification:
+- Ran `go test ./cmd/ascii-art-web` → PASS.
+- Ran `go test ./...` → PASS.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "perfect, now i want to ask you something else, is it possible to change the main.go for the web, in order to be as minimal as possible? dont make any changes yet, just answer me"
+
+AI Assistant Output & Actions:
+
+Architecture Guidance:
+- Reviewed the current role of `cmd/ascii-art-web/main.go` based on the implemented Task 13 API work and existing web server structure.
+- Assessed whether the web entrypoint can be reduced in size without changing behavior.
+- Confirmed that `cmd/ascii-art-web/main.go` can be made substantially smaller by moving validation, request decoding, shared rendering orchestration, JSON writing, and template loading into dedicated helper files or internal packages.
+
+Proposal:
+- Recommended keeping `main.go` focused on startup concerns only: route registration, template initialization, and `http.ListenAndServe`.
+- Recommended extracting handler logic into separate files and moving shared business logic into a small service layer reused by HTML and API handlers.
+- Recommended preserving behavior first, then minimizing the entrypoint incrementally with tests in place.
+
+Verification:
+- No tests were run because the request was limited to explanation and no code changes.
+
+Log Update: Appended this action to `ai.log`.
 Timestamp: 2026-03-19 User Request: "can you commit only the docs without committing the changes in the code?"
 
 AI Assistant Output & Actions:
