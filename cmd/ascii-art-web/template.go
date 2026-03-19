@@ -6,8 +6,12 @@ import (
 	"os"
 )
 
+// tmpl is parsed once at startup so every handler can reuse the same template.
 var tmpl = mustLoadTemplate()
 
+// mustLoadTemplate turns a startup configuration problem into an immediate
+// process exit, which is appropriate because the web server cannot function
+// without its only HTML template.
 func mustLoadTemplate() *template.Template {
 	tpl, err := loadTemplate()
 	if err != nil {
@@ -16,6 +20,9 @@ func mustLoadTemplate() *template.Template {
 	return tpl
 }
 
+// loadTemplate tries both the repo-root path and the package-test path.
+// The fallback keeps `go test ./cmd/ascii-art-web` working even though tests
+// execute with a different current working directory than `go run`.
 func loadTemplate() (*template.Template, error) {
 	candidates := []string{
 		"templates/index.html",

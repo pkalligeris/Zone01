@@ -24,6 +24,23 @@ Task Expansion: The assistant expanded the previous high-level breakdown into de
 - `tasks/task_03_rendering.md`: Detailed the TDD cycle for the rendering logic and multi-line support (Dev 3).
 
 Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "Perfect, now one final task for you, can you add extended comments on the code files we generated?"
+
+AI Assistant Output & Actions:
+
+Code Documentation:
+- Reviewed the generated web package files: `cmd/ascii-art-web/main.go`, `handlers.go`, `service.go`, `template.go`, and `types.go`.
+- Added extended explanatory comments describing the responsibilities of the web entrypoint, template loading, HTML/API handlers, shared processing flow, banner/template fallback behavior, validation helpers, and shared request/response types.
+- Kept the changes non-functional by limiting edits to comments only.
+
+Formatting:
+- Ran `gofmt -w cmd/ascii-art-web/main.go cmd/ascii-art-web/types.go cmd/ascii-art-web/template.go cmd/ascii-art-web/handlers.go cmd/ascii-art-web/service.go`.
+
+Verification:
+- Ran `go test ./cmd/ascii-art-web` → PASS.
+- Ran `go test ./...` → PASS.
+
+Log Update: Appended this action to `ai.log`.
 Timestamp: 2026-03-19 User Request: "perfect, can you now delete the README_WEB.md file? and then commit the changes?"
 
 AI Assistant Output & Actions:

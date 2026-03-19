@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+// main keeps the entrypoint intentionally small: route wiring lives here,
+// while validation and render behavior stay in the helper files beside it.
 func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/ascii-art", asciiArtHandler)

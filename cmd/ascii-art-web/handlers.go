@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+// homeHandler serves the initial page and rejects unknown paths so `/`
+// behaves like a real route rather than a prefix match.
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.Error(w, "404 Not Found", http.StatusNotFound)
@@ -19,6 +21,9 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// asciiArtHandler processes the browser form submission.
+// It deliberately uses the web-specific render path so the resulting HTML
+// contains browser-friendly text and CSS color, not terminal ANSI escapes.
 func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "405 Method Not Allowed", http.StatusMethodNotAllowed)
@@ -54,6 +59,9 @@ func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// apiASCIIArtHandler exposes the same render pipeline over JSON.
+// Unknown fields and multiple JSON values are rejected to keep the API contract
+// strict and predictable for clients.
 func apiASCIIArtHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeJSON(w, http.StatusMethodNotAllowed, asciiArtResponse{Error: "Method not allowed"})
@@ -81,6 +89,8 @@ func apiASCIIArtHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, asciiArtResponse{Result: result})
 }
 
+// writeJSON centralizes JSON responses so API handlers always emit the same
+// content type and encoding behavior.
 func writeJSON(w http.ResponseWriter, status int, payload asciiArtResponse) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)

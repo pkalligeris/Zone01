@@ -10,14 +10,22 @@ import (
 	"strings"
 )
 
+// processASCIIArt is used by the JSON API and preserves terminal-style color
+// rendering because API clients may want the raw colored output.
 func processASCIIArt(req asciiArtRequest) (string, *appError) {
 	return processASCIIArtRequest(req, true)
 }
 
+// processWebASCIIArt is used by the HTML form route.
+// It validates the requested color but leaves the rendered text uncolored so
+// the browser can apply color via CSS instead of displaying ANSI escape codes.
 func processWebASCIIArt(req asciiArtRequest) (string, *appError) {
 	return processASCIIArtRequest(req, false)
 }
 
+// processASCIIArtRequest is the shared application flow for the web package:
+// normalize inputs, validate them, load the banner, build render config,
+// and finally delegate to the core renderer.
 func processASCIIArtRequest(req asciiArtRequest, renderColor bool) (string, *appError) {
 	text := normalizeNewlines(req.Text)
 	bannerName := strings.TrimSpace(req.Banner)
@@ -95,6 +103,8 @@ func processASCIIArtRequest(req asciiArtRequest, renderColor bool) (string, *app
 		Align:       align,
 		ColorSubstr: req.ColorSubstring,
 	}
+	// Color is only injected into the render config for API/terminal output.
+	// The HTML route applies the chosen color in the template layer instead.
 	if renderColor {
 		cfg.Color = color
 	}
@@ -114,6 +124,8 @@ func processASCIIArtRequest(req asciiArtRequest, renderColor bool) (string, *app
 	return result, nil
 }
 
+// loadBannerWithFallbacks mirrors the template-loading strategy so local runs
+// and package-local tests can both find the banner assets reliably.
 func loadBannerWithFallbacks(path string) (model.Banner, error) {
 	candidates := []string{
 		path,
@@ -135,11 +147,15 @@ func loadBannerWithFallbacks(path string) (model.Banner, error) {
 	return nil, lastErr
 }
 
+// normalizeNewlines makes form and API input consistent before validation and
+// rendering by collapsing Windows and legacy Mac line endings into `\n`.
 func normalizeNewlines(text string) string {
 	text = strings.ReplaceAll(text, "\r\n", "\n")
 	return strings.ReplaceAll(text, "\r", "\n")
 }
 
+// isValidASCII keeps web input aligned with the banner set, which only supports
+// printable ASCII plus newline separators between rendered blocks.
 func isValidASCII(text string) bool {
 	for _, ch := range text {
 		if (ch < 32 || ch > 126) && ch != '\n' {
@@ -149,6 +165,7 @@ func isValidASCII(text string) bool {
 	return true
 }
 
+// isValidBanner limits requests to the banner assets that ship with the app.
 func isValidBanner(name string) bool {
 	switch name {
 	case "standard", "shadow", "thinkertoy":
@@ -158,6 +175,7 @@ func isValidBanner(name string) bool {
 	}
 }
 
+// isValidAlign keeps alignment options in sync with the renderer contract.
 func isValidAlign(align string) bool {
 	switch align {
 	case "left", "center", "right", "justify":
