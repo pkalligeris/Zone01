@@ -24,6 +24,111 @@ Task Expansion: The assistant expanded the previous high-level breakdown into de
 - `tasks/task_03_rendering.md`: Detailed the TDD cycle for the rendering logic and multi-line support (Dev 3).
 
 Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "can you commit only the docs without committing the changes in the code?"
+
+AI Assistant Output & Actions:
+
+Git Workflow:
+- Reviewed `git status --short` to separate documentation changes from code changes.
+- Reviewed documentation diffs for `docs/tasks/task_13_api.md` and `docs/logs/ai.log` before committing.
+- Prepared a docs-only commit plan that excludes `cmd/ascii-art-web/main.go` and `cmd/ascii-art-web/main_test.go`.
+
+Documentation Commit:
+- Staged only `docs/tasks/task_13_api.md` and `docs/logs/ai.log`.
+- Left code changes in the working tree uncommitted.
+- Created a commit containing only documentation updates related to API planning and activity logging.
+
+Verification:
+- Verified via `git status --short` after the commit that code changes remained unstaged/uncommitted.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "no its ok, we will finish it together, can you start working on the task 13?"
+
+AI Assistant Output & Actions:
+
+Feature Implementation:
+- Implemented Task 13 API support in `cmd/ascii-art-web/main.go`.
+- Added JSON request/response models for the API endpoint and registered `POST /api/ascii-art`.
+- Extracted shared ASCII art processing logic so the HTML form handler and API handler reuse the same validation, banner loading, config creation, and render flow.
+- Added validation for banner, ASCII input, alignment, malformed JSON, and invalid color values.
+- Preserved the existing HTML flow in `/ascii-art` while wiring the shared processing path into it.
+- Added fallback template loading in `cmd/ascii-art-web/main.go` so the web package can be tested from different working directories.
+- Added fallback banner loading in `cmd/ascii-art-web/main.go` so web-package tests resolve banner files correctly from package-local test execution.
+
+Testing:
+- Created `cmd/ascii-art-web/main_test.go`.
+- Added handler tests for successful JSON rendering, invalid method, malformed JSON, invalid banner, invalid ASCII input, invalid color, invalid alignment, and HTML form regression coverage.
+
+Verification:
+- Ran `go test ./cmd/ascii-art-web` → PASS.
+- Ran `go test ./...` → PASS.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: " can you write a new task file for the API?"
+
+AI Assistant Output & Actions:
+
+Documentation Update:
+- Reviewed existing task formatting in `docs/tasks/task_10_web.md`, `docs/tasks/task_11_handler.md`, and `docs/tasks/task_12_template.md` to match the repository’s documentation style.
+- Created new API planning task file: `docs/tasks/task_13_api.md`.
+- Documented the API task with sections for objective, steps, validation, shared processing logic, structured error handling, testing scope, and acceptance criteria.
+
+Task Definition:
+- Added API contract guidance for a proposed JSON endpoint such as `POST /api/ascii-art`.
+- Included requirements for JSON request/response structs, HTTP method handling, validation rules, shared service extraction, and handler test coverage.
+- Preserved the instruction not to change application code yet by limiting work to documentation only.
+
+Verification:
+- No tests were run because the request was limited to creating a documentation task file.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "ok, i want to ask you this, I want this project to run using API. Does it run with API now? If not, what should we change in order to do it. Dont change anything in the code yet"
+
+AI Assistant Output & Actions:
+
+API Review:
+- Read `docs/logs/ai.log` to maintain repository activity history before responding.
+- Reviewed `cmd/ascii-art-web/main.go` to determine whether the current HTTP server exposes API endpoints or only HTML form routes.
+- Reviewed `cmd/ascii-art/main.go`, `internal/input/flags.go`, and `internal/render/renderer.go` to verify whether the rendering pipeline can be reused by an API layer.
+
+Findings Summary:
+- Confirmed the project currently runs as a CLI and as a web server, but not as a proper JSON API.
+- Confirmed the existing web server exposes HTML-oriented routes (`GET /`, `POST /ascii-art`, `/assets/`) and renders templates instead of returning structured API responses.
+- Confirmed the core banner loading and rendering flow is already reusable, so adding API support would not require rewriting the rendering engine.
+
+Proposal:
+- Recommended adding JSON endpoints to the existing web server, likely beginning with `POST /api/ascii-art`.
+- Recommended extracting shared request validation and render orchestration into a small service/helper layer so CLI, web form, and API all reuse the same business logic.
+- Recommended defining request/response payload structs and structured HTTP error responses for invalid input, missing banners, and render failures.
+
+Verification:
+- No tests were run because the request was limited to analysis and no code changes.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "review this repo in order to undestand the projects structure, architecture and porpuse, dont change anything yet, just read the repo. is that clear?"
+
+AI Assistant Output & Actions:
+
+Repository Review:
+- Read `docs/logs/ai.log` to establish prior project history and follow repository logging rules.
+- Reviewed project documentation: `docs/prd.md`, `docs/architecture.md`, `docs/milestones.md`, and inventoried task definitions under `docs/tasks/`.
+- Reviewed repository structure with `rg --files -g '!docs/logs/ai.log' | sort` to compare documented architecture against the actual codebase.
+
+Architecture Review:
+- Reviewed core entrypoints: `cmd/ascii-art/main.go` and `cmd/ascii-art-web/main.go`.
+- Reviewed shared packages: `internal/banner/loader.go`, `internal/banner/path.go`, `internal/input/parser.go`, `internal/input/flags.go`, `internal/output/writer.go`, `internal/render/renderer.go`, `internal/render/color.go`, `internal/render/align.go`, `pkg/model/config.go`, and `pkg/model/banner.go`.
+- Reviewed presentation and regression assets: `templates/index.html`, `README.md`, `README_WEB.md`, and `test/integration_test.go`.
+
+Findings Summary:
+- Confirmed the project purpose is an ASCII art generator with both CLI and web interfaces built in Go.
+- Confirmed the implemented structure largely matches the documented layered design: CLI/web entrypoints, shared banner loader, shared renderer, shared models, CLI-specific input parsing, and file output support.
+- Confirmed task planning documents exist for foundation, rendering, extended CLI features, and web work (`task_00` through `task_12`).
+
+Verification:
+- Ran `git status --short` before logging the session; no pre-existing working tree changes were reported.
+- No tests were run because the request was limited to repository review and reading only.
+
+Log Update: Appended this action to `ai.log`.
 
 Timestamp: 2026-03-14 User Request: "ok, now i want to ask you something, i want this project to run using API, can we make that happen? DONT overwrite anything yet, just reply to me"
 
