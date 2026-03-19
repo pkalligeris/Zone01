@@ -24,6 +24,34 @@ Task Expansion: The assistant expanded the previous high-level breakdown into de
 - `tasks/task_03_rendering.md`: Detailed the TDD cycle for the rendering logic and multi-line support (Dev 3).
 
 Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "perfect, can you now delete the README_WEB.md file? and then commit the changes?"
+
+AI Assistant Output & Actions:
+
+Documentation Cleanup:
+- Prepared to remove `README_WEB.md` because its content had already been merged into `README.md`.
+- Planned a documentation-only commit including the updated `README.md`, deletion of `README_WEB.md`, and the required `docs/logs/ai.log` update.
+
+Verification:
+- Reviewed the pending documentation diff before cleanup.
+- No automated tests were run because the requested changes are documentation-only.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "now a want you to append the REAME_WEB.md into the README.md file, and after that add the new features we added for the API. Can you do that?"
+
+AI Assistant Output & Actions:
+
+Documentation Update:
+- Reviewed `README.md` and `README_WEB.md` to merge the CLI and web documentation into a single primary project README.
+- Rewrote `README.md` to include the web application content previously documented in `README_WEB.md`.
+- Added the new API-related documentation to `README.md`, including the `POST /api/ascii-art` endpoint, JSON request example, response example, API validation rules, and updated route summary.
+- Updated the README structure to describe the current web package layout (`main.go`, `handlers.go`, `service.go`, `template.go`, `types.go`) and the browser-based color rendering behavior.
+
+Verification:
+- Reviewed the updated `README.md` content after the edit.
+- No automated tests were run because the request only changed documentation.
+
+Log Update: Appended this action to `ai.log`.
 Timestamp: 2026-03-19 User Request: "ok perfect, commit the changes"
 
 AI Assistant Output & Actions:
