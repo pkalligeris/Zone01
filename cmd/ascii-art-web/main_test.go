@@ -131,7 +131,10 @@ func TestASCIIArtHandlerHTMLStillWorks(t *testing.T) {
 	if !strings.Contains(body, "<pre") {
 		t.Fatal("expected rendered HTML response")
 	}
-	if !strings.Contains(body, "\u001b[31m") {
-		t.Fatal("expected colored ASCII output in HTML response")
+	if strings.Contains(body, "\u001b[") {
+		t.Fatal("did not expect ANSI escape sequences in HTML response")
+	}
+	if !strings.Contains(body, `style="color: red;"`) {
+		t.Fatal("expected CSS color styling in HTML response")
 	}
 }

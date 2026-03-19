@@ -11,6 +11,14 @@ import (
 )
 
 func processASCIIArt(req asciiArtRequest) (string, *appError) {
+	return processASCIIArtRequest(req, true)
+}
+
+func processWebASCIIArt(req asciiArtRequest) (string, *appError) {
+	return processASCIIArtRequest(req, false)
+}
+
+func processASCIIArtRequest(req asciiArtRequest, renderColor bool) (string, *appError) {
 	text := normalizeNewlines(req.Text)
 	bannerName := strings.TrimSpace(req.Banner)
 	align := strings.ToLower(strings.TrimSpace(req.Align))
@@ -85,8 +93,10 @@ func processASCIIArt(req asciiArtRequest) (string, *appError) {
 		Input:       text,
 		BannerFile:  bannerName,
 		Align:       align,
-		Color:       color,
 		ColorSubstr: req.ColorSubstring,
+	}
+	if renderColor {
+		cfg.Color = color
 	}
 
 	result, err := render.Render(cfg, b)

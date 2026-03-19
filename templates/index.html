@@ -181,7 +181,7 @@
         {{end}}
         {{if .Result}}
         <div class="result">
-            <pre id="asciiOutput">{{.Result}}</pre>
+            <pre id="asciiOutput"{{if .Color}} style="color: {{.Color}};"{{end}}>{{.Result}}</pre>
         </div>
         {{end}}
     </div>

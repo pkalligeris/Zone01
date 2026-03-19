@@ -38,7 +38,7 @@ func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 		Color:  req.Color,
 	}
 
-	result, appErr := processASCIIArt(req)
+	result, appErr := processWebASCIIArt(req)
 	if appErr != nil {
 		data.Error = appErr.Message
 		w.WriteHeader(appErr.Status)

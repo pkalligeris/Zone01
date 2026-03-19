@@ -24,6 +24,41 @@ Task Expansion: The assistant expanded the previous high-level breakdown into de
 - `tasks/task_03_rendering.md`: Detailed the TDD cycle for the rendering logic and multi-line support (Dev 3).
 
 Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "ok perfect, commit the changes"
+
+AI Assistant Output & Actions:
+
+Git Workflow:
+- Prepared the current bug-fix changes for commit after verifying the web color rendering issue was resolved.
+- Included the required activity log update in the commit per repository instructions.
+- Planned a single commit covering the webpage color-output fix and its associated test adjustments.
+
+Verification:
+- Reused the previous verification results for this change set:
+- Ran `go test ./cmd/ascii-art-web` → PASS.
+- Ran `go test ./...` → PASS.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-19 User Request: "there is something wrong with the webpage, when it generates the requested text, between the characters there are some kind of timestamps like this"
+
+AI Assistant Output & Actions:
+
+Bug Fix:
+- Investigated the web rendering path in `cmd/ascii-art-web/handlers.go`, `cmd/ascii-art-web/service.go`, `templates/index.html`, and `internal/render/color.go`.
+- Identified the displayed sequences as ANSI terminal color escape codes being rendered into HTML output rather than browser-readable styling.
+- Updated `cmd/ascii-art-web/handlers.go` so the HTML form route uses a web-specific render path.
+- Updated `cmd/ascii-art-web/service.go` to validate color input while avoiding ANSI-colored output for the HTML page.
+- Updated `templates/index.html` to apply the selected color using CSS (`style="color: ..."` on the `<pre>` result block) instead of embedding terminal escape sequences into the page.
+
+Testing:
+- Updated `cmd/ascii-art-web/main_test.go` to assert that HTML responses no longer contain ANSI escape sequences and instead include CSS color styling.
+
+Verification:
+- Ran `gofmt -w cmd/ascii-art-web/handlers.go cmd/ascii-art-web/service.go cmd/ascii-art-web/main_test.go`.
+- Ran `go test ./cmd/ascii-art-web` → PASS.
+- Ran `go test ./...` → PASS.
+
+Log Update: Appended this action to `ai.log`.
 Timestamp: 2026-03-19 User Request: "ok commit the changes now with seperate commits"
 
 AI Assistant Output & Actions:
