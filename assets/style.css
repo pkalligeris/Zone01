@@ -1,0 +1,339 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: url('/assets/unnamed (1).png') no-repeat center center fixed;
+    background-size: cover;
+    padding: 20px;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(45, 45, 45, 0.95);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    width: 100%;
+}
+
+h1 {
+    color: #ffffff;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #b0b0b0;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    font-family: monospace;
+    resize: vertical;
+    background: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.banner-options {
+    display: flex;
+    gap: 20px;
+}
+
+.banner-options label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+input[type="radio"] {
+    accent-color: #b19cd9;
+}
+
+button {
+    background: #b19cd9;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #9d7fd1;
+}
+
+.result {
+    position: relative;
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+pre {
+    font-family: monospace;
+    white-space: pre;
+    overflow-x: auto;
+    transition: color 0.3s;
+}
+
+/* Pure CSS Theme Switching */
+#theme-dark:checked ~ .container .result {
+    background: #1a1a1a;
+    border-color: #444;
+}
+#theme-dark:checked ~ .container .result pre {
+    color: #e0e0e0;
+}
+#theme-dark:checked ~ .container .btn-dark-label {
+    background: #b19cd9;
+    border-color: #9d7fd1;
+    color: #fff;
+}
+
+#theme-light:checked ~ .container .result {
+    background: #ffffff;
+    border-color: #ddd;
+}
+#theme-light:checked ~ .container .result pre {
+    color: #222222;
+}
+#theme-light:checked ~ .container .btn-light-label {
+    background: #b19cd9;
+    border-color: #9d7fd1;
+    color: #fff;
+}
+
+.error {
+    color: #ff6b6b;
+    background: #3d1f1f;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #5a2a2a;
+    margin-bottom: 20px;
+}
+
+.bg-toggle-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.bg-btn {
+    background: #333;
+    color: white;
+    padding: 8px 16px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.bg-btn:hover {
+    background: #444;
+}
+
+.controls-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    margin: 20px auto;
+    padding: 25px;
+    background: rgba(30, 30, 30, 0.6);
+    border-radius: 12px;
+    border: 1px solid #444;
+    max-width: 600px;
+}
+
+.controls-group .form-group,
+.controls-group .color-picker-group {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.controls-group label {
+    text-align: center;
+}
+
+.submit-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Color Picker Styles */
+.color-picker-group {
+    margin-bottom: 20px;
+}
+
+.color-picker-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.wheel-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wheel-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+}
+
+#colorWheel {
+    border-radius: 50%;
+    cursor: crosshair;
+    width: 140px;
+    height: 140px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+.wheel-cursor {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.8), inset 0 0 2px rgba(0, 0, 0, 0.4);
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+.lightness-slider-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 140px;
+}
+
+#lightnessSlider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 120px;
+    height: 14px;
+    border-radius: 7px;
+    outline: none;
+    cursor: pointer;
+    border: 1px solid #555;
+    transform: rotate(-90deg);
+}
+
+#lightnessSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #444;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+#lightnessSlider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #444;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.color-preview-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#colorSwatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    border: 2px solid #555;
+    background: #e0e0e0;
+    flex-shrink: 0;
+}
+
+#colorHex {
+    font-family: monospace;
+    font-size: 16px;
+    color: #e0e0e0;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 6px 10px;
+    width: 100px;
+}
+
+.btn-reset-color {
+    background: #b19cd9;
+    color: white;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btn-reset-color:hover {
+    background: #9d7fd1;
+}
+
+.btn-copy {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #b19cd9;
+    color: white;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s, opacity 0.2s;
+    opacity: 0.8;
+    z-index: 10;
+}
+
+.btn-copy:hover {
+    background: #9d7fd1;
+    opacity: 1;
+}
