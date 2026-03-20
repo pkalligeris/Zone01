@@ -77,11 +77,6 @@
         {{if .Result}}
         <div class="result">
             <button type="button" class="btn-copy" id="copyBtn">Copy</button>
-            {{if .Color}}
-            <style>
-                #asciiOutput { color: {{.Color}} !important; }
-            </style>
-            {{end}}
             <pre id="asciiOutput">{{.Result}}</pre>
         </div>
         {{end}}
