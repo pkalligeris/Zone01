@@ -11,7 +11,8 @@
 <body>
     <input type="radio" name="theme-toggle" id="theme-dark" value="dark" style="display: none;" checked>
     <input type="radio" name="theme-toggle" id="theme-light" value="light" style="display: none;">
-    
+
+    <!-- this is the main container for the ascii art generator -->
     <div class="container">
         <h1>ASCII Art Generator</h1>
         <form method="POST" action="/ascii-art">
@@ -20,13 +21,16 @@
                 <textarea id="text" name="text" rows="4" placeholder="Type your text here..."
                     required>{{.Input}}</textarea>
             </div>
+
+            <!-- this is the controls group for the ascii art generator -->
             <div class="controls-group">
                 <div class="form-group">
                     <label>Select Banner:</label>
                     <div class="banner-options">
                         <label><input type="radio" name="banner" value="standard" {{if eq .Banner "standard"
                                 }}checked{{end}} required> Standard</label>
-                        <label><input type="radio" name="banner" value="shadow" {{if eq .Banner "shadow" }}checked{{end}}>
+                        <label><input type="radio" name="banner" value="shadow" {{if eq .Banner "shadow"
+                                }}checked{{end}}>
                             Shadow</label>
                         <label><input type="radio" name="banner" value="thinkertoy" {{if eq .Banner "thinkertoy"
                                 }}checked{{end}}> Thinkertoy</label>
@@ -83,6 +87,9 @@
     </div>
 
     <script>
+
+        // this function is for the color wheel
+        // it is a canvas element that is used to pick a color
         (function () {
             const canvas = document.getElementById('colorWheel');
             const ctx = canvas.getContext('2d');
@@ -109,6 +116,7 @@
 
             const DEFAULT_COLOR = '#e0e0e0';
 
+            // this function is for the color wheel
             function drawWheel() {
                 const imageData = ctx.createImageData(canvas.width, canvas.height);
                 const data = imageData.data;
@@ -150,6 +158,7 @@
                 ctx.putImageData(imageData, 0, 0);
             }
 
+            // this function is for the color wheel
             function hslToRgb(h, s, l) {
                 s /= 100;
                 l /= 100;
@@ -170,10 +179,12 @@
                 ];
             }
 
+            // this function is for the color wheel
             function rgbToHex(r, g, b) {
                 return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
             }
 
+            // this function is for the color wheel
             function updateColor(hex) {
                 swatch.style.background = hex;
                 hexDisplay.value = hex;
@@ -183,6 +194,7 @@
                 }
             }
 
+            // this function is for the color wheel 
             function pickColorAt(x, y) {
                 const dx = x - centerX;
                 const dy = y - centerY;
@@ -204,6 +216,7 @@
                 updateColor(hex);
             }
 
+            // this function is for the cursor position
             function repositionCursor() {
                 if (!colorActive) return;
                 const dist = (currentSat / 100) * radius;
@@ -218,6 +231,7 @@
                 updateColor(hex);
             }
 
+            // this function is for the color wheel
             function getCanvasCoords(e) {
                 const rect = canvas.getBoundingClientRect();
                 const scaleX = canvas.width / rect.width;
@@ -319,6 +333,7 @@
                 themeLight.addEventListener('change', () => localStorage.setItem('asciiBgTheme', 'light'));
             }
 
+            // this function is for the copy button
             if (copyBtn && asciiOutput) {
                 copyBtn.addEventListener('click', () => {
                     navigator.clipboard.writeText(asciiOutput.innerText).then(() => {
