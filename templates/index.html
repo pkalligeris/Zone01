@@ -81,7 +81,7 @@
         {{if .Result}}
         <div class="result">
             <button type="button" class="btn-copy" id="copyBtn">Copy</button>
-            <pre id="asciiOutput">{{.Result}}</pre>
+            <pre id="asciiOutput"{{if .Color}} style="color: {{.Color}};"{{end}}>{{.Result}}</pre>
         </div>
         {{end}}
     </div>

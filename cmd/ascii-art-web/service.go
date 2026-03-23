@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+// maxTextLength is the upperlimit on input size to prevent excessively slow
+// renders and oversized responses.
+const maxTextLength = 2000
+
 // processASCIIArt is used by the JSON API and preserves terminal-style color
 // rendering because API clients may want the raw colored output.
 func processASCIIArt(req asciiArtRequest) (string, *appError) {
@@ -36,10 +40,17 @@ func processASCIIArtRequest(req asciiArtRequest, renderColor bool) (string, *app
 		align = "left"
 	}
 
-	if text == "" || bannerName == "" {
+	if strings.TrimSpace(text) == "" || bannerName == "" {
 		return "", &appError{
 			Status:  http.StatusBadRequest,
 			Message: "Text and banner selection are required",
+		}
+	}
+
+	if len(text) > maxTextLength {
+		return "", &appError{
+			Status:  http.StatusBadRequest,
+			Message: "Input text is too long (max 2000 characters)",
 		}
 	}
 

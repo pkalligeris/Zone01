@@ -7,6 +7,11 @@ import (
 	"net/http"
 )
 
+// maxBodyBytes caps API request bodies to 32 KB. Requests larger than this
+// are rejected before parsing so the server cannot be forced into allocating
+// unbounded memory for a single request.
+const maxBodyBytes = 32 * 1024
+
 // homeHandler serves the initial page and rejects unknown paths so `/`
 // behaves like a real route rather than a prefix match.
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,10 +74,15 @@ func apiASCIIArtHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req asciiArtRequest
+	r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, asciiArtResponse{Error: "Invalid JSON body"})
+		status := http.StatusBadRequest
+		if err.Error() == "http: request body too large" {
+			status = http.StatusRequestEntityTooLarge
+		}
+		writeJSON(w, status, asciiArtResponse{Error: "Invalid JSON body"})
 		return
 	}
 	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
