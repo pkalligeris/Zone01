@@ -64,7 +64,7 @@ func processASCIIArtRequest(req asciiArtRequest, renderColor bool) (string, *app
 	if !isValidASCII(text) {
 		return "", &appError{
 			Status:  http.StatusBadRequest,
-			Message: "Invalid characters in input. Only ASCII characters (32-126) are allowed",
+			Message: "Your input contains special characters we don't recognize. Please stick to standard English letters, numbers, and common punctuation marks.",
 		}
 	}
 

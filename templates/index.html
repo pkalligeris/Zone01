@@ -20,9 +20,12 @@
         </p>
         <form method="POST" action="/ascii-art">
             <div class="form-group">
-                <label for="text">Enter Text:</label>
                 <textarea id="text" name="text" rows="4" placeholder="Type your text here..."
-                    required>{{.Input}}</textarea>
+                    maxlength="2000" required>{{.Input}}</textarea>
+                <div class="textarea-footer">
+                    <span class="accepted-chars">Letters, numbers, and basic punctuation</span>
+                    <span class="char-counter" id="charCounter">0/2000</span>
+                </div>
             </div>
 
             <!-- this is the controls group for the ascii art generator -->
@@ -351,6 +354,13 @@
             const errorContainer = document.getElementById('errorContainer');
             const errorOutput = document.getElementById('errorOutput');
             const asciiResultContainer = document.getElementById('asciiResultContainer');
+            const charCounter = document.getElementById('charCounter');
+            
+            function updateCharCount() {
+                if (charCounter && textInput) {
+                    charCounter.innerText = `${textInput.value.length}/2000`;
+                }
+            }
             
             let fetchTimeout;
             async function fetchAsciiLive() {
@@ -399,6 +409,7 @@
             }
             
             function handleInput() {
+                updateCharCount();
                 clearTimeout(fetchTimeout);
                 fetchTimeout = setTimeout(fetchAsciiLive, 50); // fast 50ms debounce
             }
@@ -407,6 +418,9 @@
             document.querySelectorAll('input[name="banner"]').forEach(radio => {
                 radio.addEventListener('change', fetchAsciiLive);
             });
+            
+            // Initialize the counter on page load
+            updateCharCount();
 
         })();
     </script>
