@@ -27,8 +27,16 @@ body {
 
 h1 {
     color: #ffffff;
-    margin-bottom: 30px;
+    margin-bottom: 5px;
     text-align: center;
+}
+
+.description {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #b0b0b0;
+    line-height: 1.5;
+    font-size: 1.1em;
 }
 
 .form-group {
@@ -100,27 +108,31 @@ pre {
 }
 
 /* Pure CSS Theme Switching */
-#theme-dark:checked ~ .container .result {
+#theme-dark:checked~.container .result {
     background: #1a1a1a;
     border-color: #444;
 }
-#theme-dark:checked ~ .container .result pre {
+
+#theme-dark:checked~.container .result pre {
     color: #e0e0e0;
 }
-#theme-dark:checked ~ .container .btn-dark-label {
+
+#theme-dark:checked~.container .btn-dark-label {
     background: #b19cd9;
     border-color: #9d7fd1;
     color: #fff;
 }
 
-#theme-light:checked ~ .container .result {
+#theme-light:checked~.container .result {
     background: #ffffff;
     border-color: #ddd;
 }
-#theme-light:checked ~ .container .result pre {
+
+#theme-light:checked~.container .result pre {
     color: #222222;
 }
-#theme-light:checked ~ .container .btn-light-label {
+
+#theme-light:checked~.container .btn-light-label {
     background: #b19cd9;
     border-color: #9d7fd1;
     color: #fff;

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASCII Art Generator</title>
-    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/assets/style.css?v=2">
 </head>
 
 <body>
@@ -15,6 +15,9 @@
     <!-- this is the main container for the ascii art generator -->
     <div class="container">
         <h1>ASCII Art Generator</h1>
+        <p class="description">
+            Type any text and watch it transform into ASCII art instantly.
+        </p>
         <form method="POST" action="/ascii-art">
             <div class="form-group">
                 <label for="text">Enter Text:</label>
@@ -69,21 +72,17 @@
                 </div>
             </div>
 
-            <div class="submit-group">
-                <button type="submit">Generate ASCII Art</button>
-            </div>
+            <!-- The submit button was removed for instant live-rendering -->
         </form>
-        {{if .Error}}
-        <div class="result">
-            <div class="error">{{.Error}}</div>
+
+        <div class="result" id="errorContainer" {{if not .Error}}style="display: none;"{{end}}>
+            <div class="error" id="errorOutput">{{.Error}}</div>
         </div>
-        {{end}}
-        {{if .Result}}
-        <div class="result">
+
+        <div class="result" id="asciiResultContainer" {{if not .Result}}style="display: none;"{{end}}>
             <button type="button" class="btn-copy" id="copyBtn">Copy</button>
-            <pre id="asciiOutput"{{if .Color}} style="color: {{.Color}};"{{end}}>{{.Result}}</pre>
+            <pre id="asciiOutput">{{.Result}}</pre>
         </div>
-        {{end}}
     </div>
 
     <script>
@@ -347,6 +346,68 @@
                     });
                 });
             }
+            // Live Rendering logic
+            const textInput = document.getElementById('text');
+            const errorContainer = document.getElementById('errorContainer');
+            const errorOutput = document.getElementById('errorOutput');
+            const asciiResultContainer = document.getElementById('asciiResultContainer');
+            
+            let fetchTimeout;
+            async function fetchAsciiLive() {
+                const text = textInput.value;
+                const bannerEl = document.querySelector('input[name="banner"]:checked');
+                const banner = bannerEl ? bannerEl.value : 'standard';
+                
+                if (!text.trim()) {
+                    errorContainer.style.display = 'none';
+                    asciiResultContainer.style.display = 'none';
+                    // clear the output if there's no text
+                    if(asciiOutput) asciiOutput.innerText = '';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/ascii-art', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        // Request raw text without ANSI by leaving color empty
+                        body: JSON.stringify({ text: text, banner: banner, color: "" })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        errorOutput.innerText = data.error || 'Failed to render';
+                        errorContainer.style.display = 'block';
+                        asciiResultContainer.style.display = 'none';
+                    } else {
+                        asciiOutput.innerText = data.result;
+                        // The color is applied by the browser via CSS styling on the pre tag
+                        const currentColor = colorInput.value;
+                        if (currentColor && currentColor !== '') {
+                            asciiOutput.style.color = currentColor;
+                        }
+                        
+                        errorContainer.style.display = 'none';
+                        asciiResultContainer.style.display = 'block';
+                    }
+                } catch (err) {
+                    errorOutput.innerText = 'Network error: ' + err.message;
+                    errorContainer.style.display = 'block';
+                    asciiResultContainer.style.display = 'none';
+                }
+            }
+            
+            function handleInput() {
+                clearTimeout(fetchTimeout);
+                fetchTimeout = setTimeout(fetchAsciiLive, 50); // fast 50ms debounce
+            }
+            
+            textInput.addEventListener('input', handleInput);
+            document.querySelectorAll('input[name="banner"]').forEach(radio => {
+                radio.addEventListener('change', fetchAsciiLive);
+            });
+
         })();
     </script>
 </body>
