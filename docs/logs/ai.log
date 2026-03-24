@@ -1766,3 +1766,14 @@ Verification:
 - Ran `go test ./...` → PASS for all packages.
 
 Log Update: Appended this action to `ai.log`.
+
+Timestamp: 2026-03-24 User Request: "question , i tested it my self but when i input this text structure with newline example 'sads issad' the output i am getting with the export is 'sadsissad' the text i am receiving doesnt understand the newline"
+
+AI Assistant Output & Actions:
+
+Bug Fix (Export Newlines):
+- Investigated the JavaScript logic triggering the export download in `templates/index.html`.
+- Identified that `document.createElement('input')` defaults to `type="text"`. Per HTML specifications, `type="text"` inputs automatically strip newline characters (`\r\n` or `\n`) when their values are set or submitted. This caused multi-line ASCII art requests to be flattened into single lines.
+- Updated the dynamically created text and banner inputs to explicitly use `type="hidden"`. Hidden inputs preserve all whitespace, including newlines, ensuring the server receives the exact multi-line string the user typed.
+
+Log Update: Appended this action to `ai.log`.

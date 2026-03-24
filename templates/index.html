@@ -435,11 +435,13 @@
                     form.style.display = 'none';
 
                     const tInput = document.createElement('input');
+                    tInput.type = 'hidden';
                     tInput.name = 'text';
                     tInput.value = text;
                     form.appendChild(tInput);
 
                     const bInput = document.createElement('input');
+                    bInput.type = 'hidden';
                     bInput.name = 'banner';
                     bInput.value = bannerVal;
                     form.appendChild(bInput);
