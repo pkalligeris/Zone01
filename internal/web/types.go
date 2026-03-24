@@ -1,4 +1,4 @@
-package main
+package web
 
 // PageData is the view model passed to the HTML template.
 // It stores the latest form values plus either a render result or an error

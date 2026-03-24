@@ -1,4 +1,4 @@
-package main
+package web
 
 import (
 	"encoding/json"
@@ -13,6 +13,15 @@ import (
 // are rejected before parsing so the server cannot be forced into allocating
 // unbounded memory for a single request.
 const maxBodyBytes = 32 * 1024
+
+// RegisterRoutes links standard HTTP endpoints to the internal handlers.
+func RegisterRoutes() {
+	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/ascii-art", asciiArtHandler)
+	http.HandleFunc("/api/ascii-art", apiASCIIArtHandler)
+	http.HandleFunc("/export", exportHandler)
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+}
 
 // homeHandler serves the initial page and rejects unknown paths so `/`
 // behaves like a real route rather than a prefix match.

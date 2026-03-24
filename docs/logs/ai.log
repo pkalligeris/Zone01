@@ -1777,3 +1777,21 @@ Bug Fix (Export Newlines):
 - Updated the dynamically created text and banner inputs to explicitly use `type="hidden"`. Hidden inputs preserve all whitespace, including newlines, ensuring the server receives the exact multi-line string the user typed.
 
 Log Update: Appended this action to `ai.log`.
+
+Timestamp: 2026-03-24 User Request: "okay fix the structure"
+
+AI Assistant Output & Actions:
+
+Refactoring (Standard Go Project Layout):
+- Restructured the web server to conform to Standard Go Project Layout.
+- Created `internal/web/` directory.
+- Moved `handlers.go`, `service.go`, `template.go`, `types.go`, and `main_test.go` from `cmd/ascii-art-web/` to `internal/web/`.
+- Updated package declarations from `package main` to `package web`.
+- Exposed a `RegisterRoutes()` function in `internal/web/handlers.go` to wire up HTTP handlers.
+- Refactored `cmd/ascii-art-web/main.go` to exclusively handle execution, importing `ascii-art/internal/web` and calling `web.RegisterRoutes()`.
+
+Verification:
+- Ran `go test ./...` → PASS for all packages (including `internal/web`).
+- Compiled the executable with `go build ./cmd/ascii-art-web/` → Success.
+
+Log Update: Appended this action to `ai.log`.
