@@ -156,30 +156,31 @@ Output must match provided examples exactly.
 
 ### 4.8 Web Interface
 
-- **Entrypoint:** `cmd/ascii-art-web/main.go`
+- **Entrypoint:** `cmd/ascii-art-web/main.go` acting as wrapper for `internal/web` package.
 - **Port:** HTTP server listening on `:8080`.
 - **Routes:**
   - `GET /` — Serves the home page with an ASCII art generation form.
-  - `POST /ascii-art` — Accepts form input, generates ASCII art, and returns the result.
-  - `/assets/` — Serves static files (background image, etc.).
+  - `POST /ascii-art` — Accepts form input, generates ASCII art, and returns an HTML result.
+  - `POST /api/ascii-art` — JSON API endpoint for generating ASCII art programmatically.
+  - `POST /export` — Endpoint returning a downloadable `.txt` file with HTTP headers (`Content-Disposition: attachment`).
+  - `/assets/` — Serves static files (CSS, Javascript, background images).
 - **Template:** `templates/index.html` rendered via Go `html/template`.
 - **Form Fields:**
   - `text` (textarea) — The input string to convert.
   - `banner` (radio buttons) — Banner selection: `standard`, `shadow`, `thinkertoy`.
-- **Input Validation:**
+  - `color` (color picker) — Select hex colors for styling the ASCII output.
+- **Input Validation & Security:**
   - Text and banner must not be empty (→ 400 Bad Request).
-  - Banner must be one of the three valid options (→ 400 Bad Request).
+  - API payloads are strictly hard-capped at 32KB to prevent memory exhaustion DoS attacks.
   - Characters must be within ASCII 32–126 or newline (→ 400 Bad Request).
 - **Error Handling:**
   - Banner file not found → 404 Not Found.
   - Failed banner load or render → 500 Internal Server Error.
-  - Invalid HTTP method on `/ascii-art` → 405 Method Not Allowed.
-  - Unknown path on `/` → 404 Not Found.
+  - Invalid HTTP method → 405 Method Not Allowed.
 - **Behavior:**
-  - On `GET /`, the form defaults to the `standard` banner.
-  - On successful `POST`, the result is displayed below the form.
-  - On error, an error message is displayed below the form.
-  - The form retains the user's input and banner selection after submission.
+  - Features real-time **AJAX Live Preview** updating the display as the user types without full page reloads.
+  - Utilizes modern Glassmorphism CSS design.
+  - Allows exporting the finalized output structure as a `.txt` file downloading directly to the physical disk.
 
 ---
 
@@ -228,10 +229,12 @@ The project is considered complete when:
 - **Output flag correctly writes to files.**
 - **Alignment flag correctly positions text based on terminal width.**
 - **Banner argument correctly switches fonts.**
-- **Web interface serves the form, processes input, and displays results.**
+- **Web interface serves the form, processes input, and supports live preview rendering.**
+- **Web interface provides a RESTful JSON API (`/api/ascii-art`).**
+- **Web interface allows downloading the generated art as a `.txt` file with correct headers.**
 - **Web interface returns correct HTTP status codes for all error conditions.**
 - Unit tests pass.
-- Code is clean and modular.
+- Code is cleanly modularized following Standard Go Project Layout patterns (`cmd/` and `internal/`).
 - No banner data is hardcoded.
 
 ---
@@ -262,8 +265,7 @@ The project is considered complete when:
 - Add performance optimizations.
 - Add additional ASCII fonts.
 - Add integration tests.
-- Add file export/download from web interface.
-- Add live preview (AJAX-based rendering without full page reload).
+- Provide export functionality in secondary formats (HTML, JSON).
 
 ### 11. Misc.
 When Unsure ask for confirmation

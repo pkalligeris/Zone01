@@ -18,11 +18,14 @@ graph TD
     Render -->|Returns Art| CLI
     CLI -->|Stdout or File| User
 
-    Web[cmd/ascii-art-web] -->|Calls| Banner
-    Web -->|Calls| Render
-    Web -->|Renders| Templates[templates/index.html]
-    Web -->|Serves| Assets[assets/]
-    Web -->|HTTP Response| Browser[Browser]
+    Web[cmd/ascii-art-web] -->|Imports| InternalWeb[internal/web]
+    InternalWeb -->|Calls| Banner
+    InternalWeb -->|Calls| Render
+    InternalWeb -->|Renders| Templates[templates/index.html]
+    InternalWeb -->|Serves| Assets[assets/]
+    InternalWeb -->|HTTP Response| Browser[Browser]
+    InternalWeb -->|File Download| Browser[Browser]
+    InternalWeb -->|JSON API Response| APIClient[API Client]
     
     Test[test/integration] -->|Validates| CLI
 ```
@@ -37,19 +40,19 @@ graph TD
     3.  Passes the string and banner to the `Renderer`.
     4.  Prints the result to the console.
 
-### 2. Web Controller (`cmd/ascii-art-web/main.go`)
-*   **Responsibility:** HTTP server orchestration.
+### 2. Web Layer (`internal/web` & `cmd/ascii-art-web/main.go`)
+*   **Responsibility:** HTTP server orchestration and RESTful JSON API.
 *   **Components:**
-    *   `PageData` struct — holds `Input`, `Banner`, `Result`, `Error` for template rendering.
-    *   `homeHandler` — serves `GET /` with the form (defaults to `standard` banner).
-    *   `asciiArtHandler` — handles `POST /ascii-art`: validates input, loads banner, renders ASCII art, returns result via template.
-    *   Static file server — serves `/assets/` for images and other static resources.
+    *   `cmd/ascii-art-web/main.go` — Entrypoint. Wires up routes and starts the ":8080" server.
+    *   `internal/web/handlers.go` — HTTP handlers (`GET /`, `POST /ascii-art`, `POST /api/ascii-art`, `POST /export`).
+    *   `internal/web/service.go` — Web-specific core logic (parsing form data, calling the renderer, managing App errors).
+    *   Static file server — serves `/assets/` for CSS, background images, etc.
 *   **Flow:**
-    1.  Receives HTTP request.
-    2.  Validates form input (text, banner name, ASCII range).
+    1.  Receives HTTP request (Form POST, JSON API, or File Export).
+    2.  Validates form/JSON input (text, banner name, ASCII limits, 32KB payload caps).
     3.  Calls `Banner Loader` to read the font file.
     4.  Passes the text and banner to the `Renderer`.
-    5.  Renders the HTML template with the result or error.
+    5.  Returns an HTML template, a JSON object, or a downloadable `.txt` file via headers.
 
 ### 3. Input Layer (`internal/input`)
 *   **Responsibility:** Validation and Sanitization (CLI only).
@@ -92,9 +95,15 @@ graph TD
 │   ├── input/                # Input validation and sanitization (CLI)
 │   │   ├── parser.go
 │   │   └── parser_test.go
-│   └── render/               # ASCII art generation logic
-│       ├── renderer.go
-│       └── renderer_test.go
+│   ├── render/               # ASCII art generation logic
+│   │   ├── renderer.go
+│   │   └── renderer_test.go
+│   └── web/                  # Web server HTTP logic and handlers
+│       ├── handlers.go
+│       ├── handlers_test.go
+│       ├── service.go
+│       ├── template.go
+│       └── types.go
 ├── pkg/                      # Public library code (safe for external use)
 │   └── model/                # Shared data structures (e.g., Banner type)
 ├── templates/                # HTML templates for web interface

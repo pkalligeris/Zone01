@@ -1795,3 +1795,28 @@ Verification:
 - Compiled the executable with `go build ./cmd/ascii-art-web/` → Success.
 
 Log Update: Appended this action to `ai.log`.
+
+Timestamp: 2026-03-24 User Request: "we need to make the appropriate changes with the web version into @[docs/prd.md]"
+
+AI Assistant Output & Actions:
+
+Documentation Update:
+- Updated `docs/prd.md` to reflect the vast improvements made to the web interface.
+- Added `/api/ascii-art` (JSON API) and `/export` (Text Download) to the Routes definitions.
+- Documented the Glassmorphism styling, live AJAX preview behavior, color picker inputs, and structured API error handling.
+- Replaced the entrypoint definition with `cmd/ascii-art-web/main.go` acting as a wrapper for the `internal/web` package to reflect the recent refactor.
+- Moved "Add file export" and "Add live preview" from Section 10 (Future Improvements) into Section 7 (Acceptance Criteria), marking them as completed deliverables.
+
+Log Update: Appended this action to `ai.log`.
+
+Timestamp: 2026-03-24 User Request: "update @[docs/architecture.md]"
+
+AI Assistant Output & Actions:
+
+Documentation Update:
+- Updated `docs/architecture.md` to reflect the newly refactored Standard Go Project Layout.
+- Modified the Mermaid diagram to route web operations specifically through `internal/web`.
+- Completely rewrote `Section 2. Web Controller` to `Section 2. Web Layer`, explicitly breaking down the responsibilities of `cmd/ascii-art-web/main.go`, `internal/web/handlers.go`, and `internal/web/service.go` while documenting the JSON API, Export files, and 32KB payload caps.
+- Added the `internal/web/` folder to the Directory Structure ASCII tree, listing all inside files.
+
+Log Update: Appended this action to `ai.log`.
