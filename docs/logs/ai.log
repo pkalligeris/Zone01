@@ -1736,4 +1736,33 @@ Verification:
 - Curl tests for DoS payload limits returned `HTTP 413 Payload Too Large`.
 - Curl tests for whitespace outputs returned `HTTP 400 Bad Request`.
 
+
+Log Update: Appended this action to `ai.log`.
+
+Timestamp: 2026-03-24 User Request: "based on the @[docs/tasks] create the feature of @[docs/tasks/task_14_export.md]"
+
+AI Assistant Output & Actions:
+
+Feature Implementation (Task 14 — Export):
+- Registered `POST /export` route in `cmd/ascii-art-web/main.go`.
+- Implemented `exportHandler` in `cmd/ascii-art-web/handlers.go`:
+  - Parses `text` and `banner` from the form POST body.
+  - Calls `processWebASCIIArt` (shared render pipeline, no ANSI colors).
+  - Sets required headers: `Content-Type: text/plain; charset=utf-8`, `Content-Length`, `Content-Disposition: attachment; filename="ascii_art.txt"`.
+  - Returns errors with appropriate HTTP status codes.
+- Updated `templates/index.html`:
+  - Added an "Export" button alongside the existing "Copy" button.
+  - Wired JavaScript to dynamically submit a hidden form to `/export` with the current text and banner values.
+  - Restored `style="color: {{.Color}};"` on the `<pre>` tag (was previously removed, caused pre-existing test failure).
+
+Testing:
+- Added 3 new tests in `cmd/ascii-art-web/main_test.go`:
+  - `TestExportHandlerSuccess` — validates 200 OK, Content-Type, Content-Length, Content-Disposition headers.
+  - `TestExportHandlerRejectsGet` — validates 405 for GET requests.
+  - `TestExportHandlerRejectsEmptyText` — validates 400 for empty input.
+
+Verification:
+- Ran `go test ./cmd/ascii-art-web/ -v -run TestExport` → PASS (3/3).
+- Ran `go test ./...` → PASS for all packages.
+
 Log Update: Appended this action to `ai.log`.

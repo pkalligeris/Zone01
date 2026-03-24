@@ -84,7 +84,8 @@
 
         <div class="result" id="asciiResultContainer" {{if not .Result}}style="display: none;"{{end}}>
             <button type="button" class="btn-copy" id="copyBtn">Copy</button>
-            <pre id="asciiOutput">{{.Result}}</pre>
+            <button type="button" class="btn-copy" id="exportBtn" style="right: 70px;">Export</button>
+            <pre id="asciiOutput" {{if .Color}}style="color: {{.Color}};"{{end}}>{{.Result}}</pre>
         </div>
     </div>
 
@@ -419,6 +420,36 @@
                 radio.addEventListener('change', fetchAsciiLive);
             });
             
+            // Export button logic — submits a hidden form to /export
+            const exportBtn = document.getElementById('exportBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => {
+                    const text = textInput.value;
+                    if (!text.trim()) return;
+                    const bannerEl = document.querySelector('input[name="banner"]:checked');
+                    const bannerVal = bannerEl ? bannerEl.value : 'standard';
+
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/export';
+                    form.style.display = 'none';
+
+                    const tInput = document.createElement('input');
+                    tInput.name = 'text';
+                    tInput.value = text;
+                    form.appendChild(tInput);
+
+                    const bInput = document.createElement('input');
+                    bInput.name = 'banner';
+                    bInput.value = bannerVal;
+                    form.appendChild(bInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                    document.body.removeChild(form);
+                });
+            }
+
             // Initialize the counter on page load
             updateCharCount();
 

@@ -138,3 +138,67 @@ func TestASCIIArtHandlerHTMLStillWorks(t *testing.T) {
 		t.Fatal("expected CSS color styling in HTML response")
 	}
 }
+
+func TestExportHandlerSuccess(t *testing.T) {
+	form := url.Values{
+		"text":   {"hi"},
+		"banner": {"standard"},
+	}
+	req := httptest.NewRequest(http.MethodPost, "/export", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rec := httptest.NewRecorder()
+
+	exportHandler(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, rec.Code)
+	}
+
+	// Verify required HTTP headers
+	ct := rec.Header().Get("Content-Type")
+	if !strings.Contains(ct, "text/plain") {
+		t.Fatalf("expected Content-Type text/plain, got %q", ct)
+	}
+
+	cd := rec.Header().Get("Content-Disposition")
+	if !strings.Contains(cd, "attachment") || !strings.Contains(cd, "ascii_art.txt") {
+		t.Fatalf("expected Content-Disposition attachment with filename, got %q", cd)
+	}
+
+	cl := rec.Header().Get("Content-Length")
+	if cl == "" || cl == "0" {
+		t.Fatal("expected non-zero Content-Length")
+	}
+
+	body := rec.Body.String()
+	if body == "" {
+		t.Fatal("expected non-empty body")
+	}
+}
+
+func TestExportHandlerRejectsGet(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/export", nil)
+	rec := httptest.NewRecorder()
+
+	exportHandler(rec, req)
+
+	if rec.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("expected status %d, got %d", http.StatusMethodNotAllowed, rec.Code)
+	}
+}
+
+func TestExportHandlerRejectsEmptyText(t *testing.T) {
+	form := url.Values{
+		"text":   {""},
+		"banner": {"standard"},
+	}
+	req := httptest.NewRequest(http.MethodPost, "/export", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rec := httptest.NewRecorder()
+
+	exportHandler(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected status %d, got %d", http.StatusBadRequest, rec.Code)
+	}
+}

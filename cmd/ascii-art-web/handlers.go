@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 // maxBodyBytes caps API request bodies to 32 KB. Requests larger than this
@@ -97,6 +99,38 @@ func apiASCIIArtHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, asciiArtResponse{Result: result})
+}
+
+// exportHandler processes a form POST and returns the rendered ASCII art
+// as a downloadable plain text file. The required HTTP headers
+// (Content-Type, Content-Length, Content-Disposition) are set so the
+// browser triggers a file save dialog instead of rendering the response.
+func exportHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "405 Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	req := asciiArtRequest{
+		Text:   r.FormValue("text"),
+		Banner: r.FormValue("banner"),
+		Align:  "left",
+	}
+
+	// Render without ANSI color so the exported file contains pure text.
+	result, appErr := processWebASCIIArt(req)
+	if appErr != nil {
+		http.Error(w, fmt.Sprintf("%d %s", appErr.Status, appErr.Message), appErr.Status)
+		return
+	}
+
+	data := []byte(result)
+
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
+	w.Header().Set("Content-Disposition", `attachment; filename="ascii_art.txt"`)
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 // writeJSON centralizes JSON responses so API handlers always emit the same

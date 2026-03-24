@@ -11,6 +11,7 @@ func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/ascii-art", asciiArtHandler)
 	http.HandleFunc("/api/ascii-art", apiASCIIArtHandler)
+	http.HandleFunc("/export", exportHandler)
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
 	log.Println("Server starting on http://localhost:8080")
