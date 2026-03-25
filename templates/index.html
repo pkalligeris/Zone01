@@ -18,6 +18,9 @@
         <p class="description">
             Type any text and watch it transform into ASCII art instantly.
         </p>
+        <div style="margin-bottom: 1rem;">
+            <button type="button" id="modeToggleBtn">Switch to Manual Mode</button>
+        </div>
         <form method="POST" action="/ascii-art">
             <div class="form-group">
                 <textarea id="text" name="text" rows="4" placeholder="Type your text here..."
@@ -75,7 +78,7 @@
                 </div>
             </div>
 
-            <!-- The submit button was removed for instant live-rendering -->
+            <button type="submit" id="generateBtn" style="display: none;">Generate</button>
         </form>
 
         <div class="result" id="errorContainer" {{if not .Error}}style="display: none;"{{end}}>
@@ -454,6 +457,34 @@
 
             // Initialize the counter on page load
             updateCharCount();
+
+            // Mode toggle logic
+            const generateBtn = document.getElementById('generateBtn');
+            const modeToggleBtn = document.getElementById('modeToggleBtn');
+            let liveMode = true;
+
+            modeToggleBtn.addEventListener('click', () => {
+                liveMode = !liveMode;
+                if (liveMode) {
+                    modeToggleBtn.innerText = 'Switch to Manual Mode';
+                    generateBtn.style.display = 'none';
+                    // re-attach live rendering
+                    textInput.addEventListener('input', handleInput);
+                    document.querySelectorAll('input[name="banner"]').forEach(radio => {
+                        radio.addEventListener('change', fetchAsciiLive);
+                    });
+                    fetchAsciiLive();
+                } else {
+                    modeToggleBtn.innerText = 'Switch to Live Mode';
+                    generateBtn.style.display = '';
+                    // detach live rendering
+                    clearTimeout(fetchTimeout);
+                    textInput.removeEventListener('input', handleInput);
+                    document.querySelectorAll('input[name="banner"]').forEach(radio => {
+                        radio.removeEventListener('change', fetchAsciiLive);
+                    });
+                }
+            });
 
         })();
     </script>
