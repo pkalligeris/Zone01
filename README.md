@@ -28,10 +28,10 @@ ASCII Art Generator is a Go project that converts input strings into banner-base
 
 - `cmd/ascii-art/main.go`: CLI entrypoint and app wiring
 - `cmd/ascii-art-web/main.go`: web server entrypoint
-- `cmd/ascii-art-web/handlers.go`: HTML and API handlers
-- `cmd/ascii-art-web/service.go`: shared web validation and render flow
-- `cmd/ascii-art-web/template.go`: template loading helpers
-- `cmd/ascii-art-web/types.go`: web request/response and page data types
+- `cmd/ascii-art-web/internal/web/handlers.go`: HTML and API handlers
+- `cmd/ascii-art-web/internal/web/service.go`: shared web validation and render flow
+- `cmd/ascii-art-web/internal/web/template.go`: template loading helpers
+- `cmd/ascii-art-web/internal/web/types.go`: web request/response and page data types
 - `internal/input`: CLI input validation and `\n` parsing
 - `internal/banner`: banner file loading/parsing
 - `internal/output`: file output writer
