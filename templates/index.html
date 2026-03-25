@@ -46,6 +46,17 @@
                     </div>
                 </div>
 
+                <!-- Alignment Picker -->
+                <div class="form-group">
+                    <label>Alignment:</label>
+                    <div class="banner-options" id="alignOptions">
+                        <label><input type="radio" name="align" value="left" checked> Left</label>
+                        <label><input type="radio" name="align" value="center"> Center</label>
+                        <label><input type="radio" name="align" value="right"> Right</label>
+                        <label><input type="radio" name="align" value="justify"> Justify</label>
+                    </div>
+                </div>
+
                 <!-- Background Theme Picker -->
                 <div class="form-group">
                     <label>Output Background:</label>
@@ -381,11 +392,12 @@
                 }
                 
                 try {
+                    const alignEl = document.querySelector('input[name="align"]:checked');
+                    const align = alignEl ? alignEl.value : 'left';
                     const response = await fetch('/api/ascii-art', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        // Request raw text without ANSI by leaving color empty
-                        body: JSON.stringify({ text: text, banner: banner, color: "" })
+                        body: JSON.stringify({ text: text, banner: banner, color: "", align: align })
                     });
                     
                     const data = await response.json();
@@ -420,6 +432,9 @@
             
             textInput.addEventListener('input', handleInput);
             document.querySelectorAll('input[name="banner"]').forEach(radio => {
+                radio.addEventListener('change', fetchAsciiLive);
+            });
+            document.querySelectorAll('input[name="align"]').forEach(radio => {
                 radio.addEventListener('change', fetchAsciiLive);
             });
             
@@ -473,6 +488,9 @@
                     document.querySelectorAll('input[name="banner"]').forEach(radio => {
                         radio.addEventListener('change', fetchAsciiLive);
                     });
+                    document.querySelectorAll('input[name="align"]').forEach(radio => {
+                        radio.addEventListener('change', fetchAsciiLive);
+                    });
                     fetchAsciiLive();
                 } else {
                     modeToggleBtn.innerText = 'Switch to Live Mode';
@@ -481,6 +499,9 @@
                     clearTimeout(fetchTimeout);
                     textInput.removeEventListener('input', handleInput);
                     document.querySelectorAll('input[name="banner"]').forEach(radio => {
+                        radio.removeEventListener('change', fetchAsciiLive);
+                    });
+                    document.querySelectorAll('input[name="align"]').forEach(radio => {
                         radio.removeEventListener('change', fetchAsciiLive);
                     });
                 }

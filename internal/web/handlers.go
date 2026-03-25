@@ -50,7 +50,7 @@ func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 		Text:   r.FormValue("text"),
 		Banner: r.FormValue("banner"),
 		Color:  r.FormValue("color"),
-		Align:  "left",
+		Align:  r.FormValue("align"),
 	}
 
 	data := PageData{

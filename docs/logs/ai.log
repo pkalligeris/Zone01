@@ -1837,3 +1837,26 @@ Investigation:
 - No action was required on the CSS split itself.
 
 Log Update: Appended this action to ai.log.
+
+Timestamp: 2026-03-24 User Request: "could you add a button for alignment feature?"
+
+AI Assistant Output & Actions:
+
+Feature Implementation (Alignment UI):
+- Added alignment radio button group (Left, Center, Right, Justify) to the controls group in `templates/index.html`, styled consistently with the existing banner options.
+- Added a hidden `name="align"` input is not needed — the radio buttons carry the `name="align"` attribute directly, so the form submission picks them up natively.
+- Updated `fetchAsciiLive` in `templates/index.html` to read the selected alignment and pass it as `align` in the JSON payload to `POST /api/ascii-art`.
+- Updated `internal/web/handlers.go`: changed `asciiArtHandler` to read `r.FormValue("align")` instead of hardcoding `"left"`, so the manual (Generate button) path also respects the selected alignment.
+- Wired `change` event listeners on all `input[name="align"]` radios to trigger `fetchAsciiLive` in live mode, matching the existing banner radio behavior.
+- Wired the same listeners into the mode toggle logic so they are attached on switch to live mode and detached on switch to manual mode.
+
+Bug Fix:
+- Identified that the initial replacement accidentally placed `const alignEl` and `const align` variable declarations inside the `fetch()` options object literal, producing a JS syntax error that broke the entire script and prevented live rendering.
+- Fixed by moving both declarations to before the `fetch()` call.
+
+Verification:
+- Confirmed live rendering works after the fix.
+- Confirmed alignment change triggers an immediate re-render in live mode.
+- Confirmed the Generate button path passes the selected alignment to the server.
+
+Log Update: Appended this action to ai.log.
