@@ -28,10 +28,10 @@ ASCII Art Generator is a Go project that converts input strings into banner-base
 
 - `cmd/ascii-art/main.go`: CLI entrypoint and app wiring
 - `cmd/ascii-art-web/main.go`: web server entrypoint
-- `cmd/ascii-art-web/internal/web/handlers.go`: HTML and API handlers
-- `cmd/ascii-art-web/internal/web/service.go`: shared web validation and render flow
-- `cmd/ascii-art-web/internal/web/template.go`: template loading helpers
-- `cmd/ascii-art-web/internal/web/types.go`: web request/response and page data types
+- `internal/web/handlers.go`: HTML and API handlers
+- `internal/web/service.go`: shared web validation and render flow
+- `internal/web/template.go`: template loading helpers
+- `internal/web/types.go`: web request/response and page data types
 - `internal/input`: CLI input validation and `\n` parsing
 - `internal/banner`: banner file loading/parsing
 - `internal/output`: file output writer
@@ -132,14 +132,19 @@ http://localhost:8080
 The web interface supports:
 - text input
 - banner selection (`standard`, `shadow`, `thinkertoy`)
-- color selection through the UI
-- inline result rendering on the same page
+- alignment selection (`left`, `center`, `right`, `justify`)
+- color selection through the color wheel UI
+- live rendering mode (instant results via API as you type)
+- manual mode (Generate button submits the form)
+- copy result to clipboard
+- export result as a downloadable `.txt` file
 
 ### Web Routes
 
 - `GET /`: serves the main HTML page
 - `POST /ascii-art`: processes the form and renders the result in HTML
 - `POST /api/ascii-art`: accepts JSON and returns JSON
+- `POST /export`: renders ASCII art and returns it as a downloadable `ascii_art.txt` file
 - `/assets/`: serves static assets
 
 ## API Usage

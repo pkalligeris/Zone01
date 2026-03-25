@@ -1860,3 +1860,30 @@ Verification:
 - Confirmed the Generate button path passes the selected alignment to the server.
 
 Log Update: Appended this action to ai.log.
+
+Timestamp: 2026-03-24 User Request: "is the output button compatible with this audit? / now update ai.log and readme if needed"
+
+AI Assistant Output & Actions:
+
+Audit Review:
+- Reviewed `internal/web/handlers.go`, `internal/web/service.go`, and `go.mod` against the audit checklist.
+- Confirmed standard packages only (no external dependencies in `go.mod`).
+- Confirmed `Content-Type`, `Content-Length`, and `Content-Disposition` headers are all set correctly in `exportHandler`.
+- Confirmed exported file permissions use OS default (0644 via `os.Create`), readable and writable by the user.
+- Confirmed Export button is visible in the result container.
+- Confirmed the project runs using an API (`POST /api/ascii-art` powers live rendering).
+- Identified two failures:
+  1. `exportHandler` hardcoded `Align: "left"`, so the exported file did not match the on-screen output when a non-left alignment was selected.
+  2. The export JS form did not pass the selected alignment to the server.
+- Identified one limitation: only `.txt` export format is supported (no multiple format support).
+
+Bug Fix (Export Alignment):
+- Updated `exportHandler` in `internal/web/handlers.go` to read `r.FormValue("align")` instead of hardcoding `"left"`.
+- Updated the export JS form in `templates/index.html` to append a hidden `align` input carrying the currently selected alignment value before submitting to `POST /export`.
+
+README Update:
+- Fixed incorrect project layout paths: `cmd/ascii-art-web/internal/web/` → `internal/web/` for all four web package files.
+- Updated web interface feature list to include alignment selection, live/manual mode toggle, copy to clipboard, and export.
+- Added `POST /export` to the Web Routes section.
+
+Log Update: Appended this action to ai.log.

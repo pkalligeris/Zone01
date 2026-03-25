@@ -123,7 +123,7 @@ func exportHandler(w http.ResponseWriter, r *http.Request) {
 	req := asciiArtRequest{
 		Text:   r.FormValue("text"),
 		Banner: r.FormValue("banner"),
-		Align:  "left",
+		Align:  r.FormValue("align"),
 	}
 
 	// Render without ANSI color so the exported file contains pure text.

@@ -464,6 +464,12 @@
                     bInput.value = bannerVal;
                     form.appendChild(bInput);
 
+                    const aInput = document.createElement('input');
+                    aInput.type = 'hidden';
+                    aInput.name = 'align';
+                    aInput.value = (document.querySelector('input[name="align"]:checked') || {value: 'left'}).value;
+                    form.appendChild(aInput);
+
                     document.body.appendChild(form);
                     form.submit();
                     document.body.removeChild(form);
