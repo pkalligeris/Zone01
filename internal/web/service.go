@@ -160,9 +160,18 @@ func loadBannerWithFallbacks(path string) (model.Banner, error) {
 
 // normalizeNewlines makes form and API input consistent before validation and
 // rendering by collapsing Windows and legacy Mac line endings into `\n`.
+// Empty lines are replaced with a single space so the renderer produces an
+// 8-row blank block for them, matching the visual expectation of the web UI.
 func normalizeNewlines(text string) string {
 	text = strings.ReplaceAll(text, "\r\n", "\n")
-	return strings.ReplaceAll(text, "\r", "\n")
+	text = strings.ReplaceAll(text, "\r", "\n")
+	lines := strings.Split(text, "\n")
+	for i, line := range lines {
+		if line == "" {
+			lines[i] = " "
+		}
+	}
+	return strings.Join(lines, "\n")
 }
 
 // isValidASCII keeps web input aligned with the banner set, which only supports

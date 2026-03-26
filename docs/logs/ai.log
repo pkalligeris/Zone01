@@ -1887,3 +1887,18 @@ README Update:
 - Added `POST /export` to the Web Routes section.
 
 Log Update: Appended this action to ai.log.
+
+Timestamp: 2026-03-24 User Request: "right now if i type the following in the web server 'dasdas\n\nasdas' the empty line between is treated as just one. how can it be treated as empty string with height 8 as the other characters?"
+
+AI Assistant Output & Actions:
+
+Bug Fix (Empty Line Height in Web UI):
+- Investigated `internal/render/renderer.go` and identified that empty lines were handled with a bare `continue`, emitting only the leading `\n` separator but no 8-row block.
+- Determined the correct fix should be web-layer only to avoid breaking CLI golden tests (GT-07, GT-08, GT-09) which expect the old single-newline behavior for `\n`-only inputs.
+- Updated `normalizeNewlines` in `internal/web/service.go`: after collapsing `\r\n`/`\r` line endings, any empty line in the input is replaced with a single space `" "`. The renderer then renders that space as a full 8-row blank block, giving empty lines the same visual height as any other line.
+- The renderer itself (`internal/render/renderer.go`) was left unchanged.
+
+Verification:
+- Ran `go test ./...` → PASS for all packages.
+
+Log Update: Appended this action to ai.log.
