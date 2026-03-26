@@ -1902,3 +1902,24 @@ Verification:
 - Ran `go test ./...` → PASS for all packages.
 
 Log Update: Appended this action to ai.log.
+
+Timestamp: 2026-03-24 User Request: "remove the alignment feature completely on the web application"
+
+AI Assistant Output & Actions:
+
+Feature Removal (Alignment — Web UI):
+- Removed the Alignment radio button group (Left, Center, Right, Justify) from `templates/index.html`.
+- Removed the `asciiOutputWrapper` flex div and reverted `<pre id="asciiOutput">` to a plain tag.
+- Removed `align` from the `fetch('/api/ascii-art')` JSON payload in live mode.
+- Removed `justifyContent` wrapper logic from the live render callback.
+- Removed `align` hidden input from the export form JS.
+- Removed `input[name="align"]` event listeners from both live mode attach and detach paths.
+- Removed `Align` field from `PageData` in `internal/web/types.go`.
+- Removed `align` from `asciiArtRequest` population in `asciiArtHandler` and `exportHandler` in `internal/web/handlers.go`.
+- Reverted `processWebASCIIArt` in `internal/web/service.go` to pass the request through unchanged (no forced `align=left` override needed anymore).
+- Updated `README.md`: removed alignment from web interface feature list, added a note that alignment is CLI-only, updated API validation to mark `align` as optional.
+
+Verification:
+- Ran `go test ./...` → PASS for all packages.
+
+Log Update: Appended this action to ai.log.

@@ -46,17 +46,6 @@
                     </div>
                 </div>
 
-                <!-- Alignment Picker -->
-                <div class="form-group">
-                    <label>Alignment:</label>
-                    <div class="banner-options" id="alignOptions">
-                        <label><input type="radio" name="align" value="left" checked> Left</label>
-                        <label><input type="radio" name="align" value="center"> Center</label>
-                        <label><input type="radio" name="align" value="right"> Right</label>
-                        <label><input type="radio" name="align" value="justify"> Justify</label>
-                    </div>
-                </div>
-
                 <!-- Background Theme Picker -->
                 <div class="form-group">
                     <label>Output Background:</label>
@@ -392,12 +381,10 @@
                 }
                 
                 try {
-                    const alignEl = document.querySelector('input[name="align"]:checked');
-                    const align = alignEl ? alignEl.value : 'left';
                     const response = await fetch('/api/ascii-art', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text: text, banner: banner, color: "", align: align })
+                        body: JSON.stringify({ text: text, banner: banner, color: "" })
                     });
                     
                     const data = await response.json();
@@ -434,10 +421,6 @@
             document.querySelectorAll('input[name="banner"]').forEach(radio => {
                 radio.addEventListener('change', fetchAsciiLive);
             });
-            document.querySelectorAll('input[name="align"]').forEach(radio => {
-                radio.addEventListener('change', fetchAsciiLive);
-            });
-            
             // Export button logic — submits a hidden form to /export
             const exportBtn = document.getElementById('exportBtn');
             if (exportBtn) {
@@ -464,12 +447,6 @@
                     bInput.value = bannerVal;
                     form.appendChild(bInput);
 
-                    const aInput = document.createElement('input');
-                    aInput.type = 'hidden';
-                    aInput.name = 'align';
-                    aInput.value = (document.querySelector('input[name="align"]:checked') || {value: 'left'}).value;
-                    form.appendChild(aInput);
-
                     document.body.appendChild(form);
                     form.submit();
                     document.body.removeChild(form);
@@ -494,9 +471,6 @@
                     document.querySelectorAll('input[name="banner"]').forEach(radio => {
                         radio.addEventListener('change', fetchAsciiLive);
                     });
-                    document.querySelectorAll('input[name="align"]').forEach(radio => {
-                        radio.addEventListener('change', fetchAsciiLive);
-                    });
                     fetchAsciiLive();
                 } else {
                     modeToggleBtn.innerText = 'Switch to Live Mode';
@@ -505,9 +479,6 @@
                     clearTimeout(fetchTimeout);
                     textInput.removeEventListener('input', handleInput);
                     document.querySelectorAll('input[name="banner"]').forEach(radio => {
-                        radio.removeEventListener('change', fetchAsciiLive);
-                    });
-                    document.querySelectorAll('input[name="align"]').forEach(radio => {
                         radio.removeEventListener('change', fetchAsciiLive);
                     });
                 }

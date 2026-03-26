@@ -50,7 +50,6 @@ func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
 		Text:   r.FormValue("text"),
 		Banner: r.FormValue("banner"),
 		Color:  r.FormValue("color"),
-		Align:  r.FormValue("align"),
 	}
 
 	data := PageData{
@@ -123,7 +122,6 @@ func exportHandler(w http.ResponseWriter, r *http.Request) {
 	req := asciiArtRequest{
 		Text:   r.FormValue("text"),
 		Banner: r.FormValue("banner"),
-		Align:  r.FormValue("align"),
 	}
 
 	// Render without ANSI color so the exported file contains pure text.

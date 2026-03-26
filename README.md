@@ -132,7 +132,6 @@ http://localhost:8080
 The web interface supports:
 - text input
 - banner selection (`standard`, `shadow`, `thinkertoy`)
-- alignment selection (`left`, `center`, `right`, `justify`)
 - color selection through the color wheel UI
 - live rendering mode (instant results via API as you type)
 - manual mode (Generate button submits the form)
@@ -145,6 +144,8 @@ The web interface supports:
 - `POST /ascii-art`: processes the form and renders the result in HTML
 - `POST /api/ascii-art`: accepts JSON and returns JSON
 - `POST /export`: renders ASCII art and returns it as a downloadable `ascii_art.txt` file
+
+> Note: alignment is supported in the CLI only. The web interface does not expose alignment controls.
 - `/assets/`: serves static assets
 
 ## API Usage
@@ -181,7 +182,7 @@ curl -X POST http://localhost:8080/api/ascii-art \
 
 - `text` and `banner` are required
 - `banner` must be one of `standard`, `shadow`, `thinkertoy`
-- `align` must be one of `left`, `center`, `right`, `justify`
+- `align` is optional; must be one of `left`, `center`, `right`, `justify` if provided
 - input must stay within ASCII `32..126` plus newline support
 - malformed JSON returns `400 Bad Request`
 

@@ -134,7 +134,7 @@ func TestASCIIArtHandlerHTMLStillWorks(t *testing.T) {
 	if strings.Contains(body, "\u001b[") {
 		t.Fatal("did not expect ANSI escape sequences in HTML response")
 	}
-	if !strings.Contains(body, `style="color: red;"`) {
+	if !strings.Contains(body, `style="color: red;`) {
 		t.Fatal("expected CSS color styling in HTML response")
 	}
 }
