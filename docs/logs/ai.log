@@ -1923,3 +1923,46 @@ Verification:
 - Ran `go test ./...` → PASS for all packages.
 
 Log Update: Appended this action to ai.log.
+
+Timestamp: 2026-03-31 User Request: "create a new task_15 about the new future. Objectives..."
+
+AI Assistant Output & Actions:
+
+Documentation Update:
+- Created `docs/tasks/task_15_dockerize.md` based on the user's Docker requirements.
+- The task defines the objective to create a Dockerfile, image, and container while adhering to Docker best practices.
+- Added acceptance criteria for metadata usage and garbage collection of unused objects.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-03-31 User Request: "read @[docs/tasks/task_15_dockerize.md] and implement it to the project"
+
+AI Assistant Output & Actions:
+
+Feature Implementation (Task 15 — Dockerize):
+- Read `docs/tasks/task_15_dockerize.md` and `docs/logs/ai.log` to understand current state.
+- Created `Dockerfile` at project root:
+  - Multi-stage build: Stage 1 uses `golang:1.22-alpine` to compile a statically-linked binary (`CGO_ENABLED=0`). Stage 2 uses `alpine:3.19` as the minimal runtime image.
+  - Non-root user: Created `appuser:appgroup` via `addgroup`/`adduser` and switched with `USER appuser`.
+  - Only copies runtime artifacts (binary, `templates/`, `assets/`) into the final image.
+  - Added `LABEL` metadata: `maintainer=panokatos`, `version=1.0.0`, `description="ASCII Art Web — a Go web server that renders ASCII art from text input"`.
+  - Exposes port 8080.
+- Created `.dockerignore` to exclude `.git`, docs, tests, IDE files, CLI entrypoint, and OS junk from the build context.
+
+Verification:
+- Built image: `docker build -t ascii-art-web:1.0.0 .` → SUCCESS (0 warnings, 35.4s).
+- Image size: 78.1MB (dominated by the 8.5MB background image asset).
+- Ran container: `docker run -d --name ascii-art-test -p 8080:8080 ascii-art-web:1.0.0` → container started.
+- Tested `GET /` → HTTP 200, full HTML returned.
+- Tested `POST /api/ascii-art` with `{"text":"Hi","banner":"standard"}` → correct ASCII art JSON response.
+- Verified non-root user: `docker exec ascii-art-test whoami` → `appuser`.
+- Verified labels: `docker inspect` → `maintainer`, `version`, `description` all present.
+- Stopped and removed test container: `docker stop ascii-art-test && docker rm ascii-art-test`.
+- Updated `docs/tasks/task_15_dockerize.md`: marked all 7 acceptance criteria as `[x]`.
+
+Docker Cleanup Reference (for Task 15 Step 5):
+- `docker container prune` — remove all stopped containers.
+- `docker image prune` — remove dangling (untagged) images.
+- `docker system prune` — remove all unused containers, networks, and dangling images.
+- `docker system prune -a` — also remove images not used by any container.
+
+Log Update: Appended this action to `ai.log`.
