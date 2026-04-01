@@ -40,10 +40,38 @@ ASCII Art Generator is a Go project that converts input strings into banner-base
 - `templates/index.html`: web UI template
 - `test/integration_test.go`: golden regression suite
 - `test/golden/*.txt`: expected outputs
+- `Dockerfile`: multi-stage container build for the web server
 
 ## Requirements
 
 - Go `1.21+`
+- Docker (optional, for containerized web deployment)
+
+## Quick Start
+
+Run tests:
+
+```bash
+go test ./...
+```
+
+Run CLI:
+
+```bash
+go run ./cmd/ascii-art "hello"
+```
+
+Run web server:
+
+```bash
+go run ./cmd/ascii-art-web
+```
+
+Open:
+
+```text
+http://localhost:8080
+```
 
 ## CLI Usage
 
@@ -144,13 +172,13 @@ The web interface supports:
 - `POST /ascii-art`: processes the form and renders the result in HTML
 - `POST /api/ascii-art`: accepts JSON and returns JSON
 - `POST /export`: renders ASCII art and returns it as a downloadable `ascii_art.txt` file
+- `/assets/`: serves static assets
 
 > Note: alignment is supported in the CLI only. The web interface does not expose alignment controls.
-- `/assets/`: serves static assets
 
 ## API Usage
 
-The project now exposes a JSON API endpoint:
+The project exposes a JSON API endpoint:
 
 ```text
 POST /api/ascii-art
@@ -194,6 +222,47 @@ curl -X POST http://localhost:8080/api/ascii-art \
 - `405 Method Not Allowed`: unsupported HTTP method
 - `500 Internal Server Error`: template, banner parsing, or render failure
 
+## Docker
+
+Build the Docker image:
+
+```bash
+docker build -t ascii-art-web:latest .
+```
+
+Run the container:
+
+```bash
+docker run --rm -p 8080:8080 --name ascii-art-web ascii-art-web:latest
+```
+
+Then open:
+
+```text
+http://localhost:8080
+```
+
+Verify the API from your host:
+
+```bash
+curl -X POST http://localhost:8080/api/ascii-art \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Docker","banner":"standard"}'
+```
+
+Stop the container (if started without `--rm`):
+
+```bash
+docker stop ascii-art-web
+```
+
+Clean up unused Docker objects:
+
+```bash
+docker image prune -f
+docker container prune -f
+```
+
 ## Testing
 
 Run all tests:
@@ -204,7 +273,7 @@ go test ./...
 
 This includes:
 - unit tests for `internal/banner`, `internal/input`, `internal/output`, and `internal/render`
-- handler tests for the web package
+- handler tests for `internal/web`
 - golden integration tests in `test/integration_test.go`
 
 ## Error Cases
