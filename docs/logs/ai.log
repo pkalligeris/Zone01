@@ -1966,3 +1966,33 @@ Docker Cleanup Reference (for Task 15 Step 5):
 - `docker system prune -a` — also remove images not used by any container.
 
 Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-04-03 User Request: "update the maintainer labels in @[Dockerfile] \"nbougial,pkallige,ipapigki\""
+
+AI Assistant Output & Actions:
+
+Configuration Update:
+- Read `docs/logs/ai.log` to review project history before making changes.
+- Read `Dockerfile` to identify the two `LABEL maintainer` instructions (Stage 1 — builder and Stage 2 — runtime).
+- Updated `LABEL maintainer` in Stage 1 (line 7) from `"panokatos"` to `"nbougial,pkallige,ipapigki"`.
+- Updated `LABEL maintainer` in Stage 2 (line 30) from `"panokatos"` to `"nbougial,pkallige,ipapigki"`.
+- No functional changes; label metadata only.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-04-03 User Request: "update prd with the latest functionality of docker"
+
+AI Assistant Output & Actions:
+
+Documentation Update:
+- Read `docs/prd.md` (277 lines) and `Dockerfile` (55 lines) to understand existing content and Docker implementation.
+- Added Docker containerisation objective to Section 2 (Objectives).
+- Extended Section 3 (Scope – In Scope) with multi-stage Dockerfile and non-root runtime entries.
+- Created new Section 4.9 – Containerisation (Docker) documenting:
+  - Stage 1 (builder): golang:1.22-alpine, WORKDIR /build, go.mod layer caching, static binary build.
+  - Stage 2 (runtime): alpine:3.19, non-root appuser/appgroup, selective COPY from builder, ownership fix.
+  - Image metadata labels (maintainer: nbougial,pkallige,ipapigki; version: 1.0.0; description).
+  - Exposed port 8080, CMD entry point, build/run commands, team workflow, .dockerignore.
+- Added four Docker acceptance criteria to Section 7 (build, run, non-root user, labels).
+- Added two Docker success metrics to Section 8 (minimal image size, non-root runtime).
+- Added four Docker risk/mitigation rows to Section 9 (image bloat, root process, missing assets, cache invalidation).
+
+Log Update: Appended this action to `ai.log`.
