@@ -4,7 +4,7 @@
 FROM golang:1.22-alpine AS builder
 
 # Metadata (applied to every stage that inherits this label set)
-LABEL maintainer="panokatos"
+LABEL maintainer="nbougial,pkallige,ipapigki"
 LABEL version="1.0.0"
 LABEL description="ASCII Art Web — a Go web server that renders ASCII art from text input"
 
@@ -27,7 +27,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /app/ascii-art-web ./cmd/ascii-art-web
 # ============================================================
 FROM alpine:3.19
 
-LABEL maintainer="panokatos"
+LABEL maintainer="nbougial,pkallige,ipapigki"
 LABEL version="1.0.0"
 LABEL description="ASCII Art Web — a Go web server that renders ASCII art from text input"
 
