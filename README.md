@@ -233,7 +233,7 @@ docker build -t ascii-art-web:latest .
 Run the container:
 
 ```bash
-docker run --rm -p 8080:8080 --name ascii-art-web ascii-art-web:latest
+docker run --rm -d -p 8080:8080 --name ascii-art-web ascii-art-web:latest
 ```
 
 Then open:
@@ -245,9 +245,10 @@ http://localhost:8080
 Verify the API from your host:
 
 ```bash
-curl -X POST http://localhost:8080/api/ascii-art \
+curl -s -X POST http://localhost:8080/api/ascii-art \
   -H "Content-Type: application/json" \
-  -d '{"text":"Docker","banner":"standard"}'
+  -d '{"text":"Docker","banner":"standard"}' \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['result'])"
 ```
 
 Stop the container (if started without `--rm`):
