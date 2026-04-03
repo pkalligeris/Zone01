@@ -19,6 +19,7 @@ The program must render letters, numbers, spaces, special characters, and newlin
 - **Export output** to a file.
 - **Align text** (left, center, right, justify) relative to terminal size.
 - **Web interface** for browser-based ASCII art generation.
+- **Containerise the application** using Docker for portable, reproducible deployments.
 - Ensure output strictly matches expected formatting examples.
 - Maintain clean, modular, and testable Go code.
 
@@ -45,6 +46,8 @@ The program must render letters, numbers, spaces, special characters, and newlin
   - Special characters
 - Handling multiple consecutive newline sequences.
 - Unit testing core logic.
+- Containerising the application with a multi-stage `Dockerfile`.
+- Running the web server as a non-root user inside a minimal Alpine runtime image.
 
 ### Out of Scope
 
@@ -184,6 +187,31 @@ Output must match provided examples exactly.
 
 ---
 
+### 4.9 Containerisation (Docker)
+
+- **Dockerfile strategy:** Multi-stage build to keep the final image small and production-ready.
+  - **Stage 1 — Builder** (`golang:1.22-alpine`):
+    - Sets `WORKDIR /build`.
+    - Copies `go.mod` first to leverage Docker layer caching (dependencies only re-downloaded when `go.mod` changes).
+    - Copies the full source tree and compiles a statically-linked binary (`CGO_ENABLED=0 GOOS=linux`) targeting `/app/ascii-art-web`.
+  - **Stage 2 — Runtime** (`alpine:3.19`):
+    - Creates a dedicated non-root system group (`appgroup`) and user (`appuser`) for security hardening.
+    - Copies only the compiled binary, `templates/`, and `assets/` from the builder stage.
+    - Sets ownership of all copied files to `appuser:appgroup`.
+    - Switches to `appuser` before the final `CMD`.
+- **Image Metadata Labels** (applied to both stages):
+  - `maintainer` — comma-separated list of team members: `nbougial,pkallige,ipapigki`.
+  - `version` — current release version (`1.0.0`).
+  - `description` — human-readable purpose of the image.
+- **Exposed port:** `8080` (matches the web server listen address).
+- **Entry point:** `CMD ["./ascii-art-web"]` starts the web server directly.
+- **Build command:** `docker build -t ascii-art-web .`
+- **Run command:** `docker run --rm -p 8080:8080 ascii-art-web`
+- **Workflow:** Each team member builds and runs their own local container from the shared `Dockerfile`; no pre-built image distribution is required.
+- **`.dockerignore`:** Excludes files that must not be copied into the build context (e.g. `.git`, local binaries, test artefacts).
+
+---
+
 ### 4.7 Error Handling
 
 The program must handle:
@@ -233,6 +261,10 @@ The project is considered complete when:
 - **Web interface provides a RESTful JSON API (`/api/ascii-art`).**
 - **Web interface allows downloading the generated art as a `.txt` file with correct headers.**
 - **Web interface returns correct HTTP status codes for all error conditions.**
+- **Docker image builds successfully from the provided `Dockerfile` using `docker build`.**
+- **Container starts and serves the web interface on port `8080` via `docker run`.**
+- **The process inside the container runs as the non-root `appuser`.**
+- **Image metadata labels (`maintainer`, `version`, `description`) are present on the final image.**
 - Unit tests pass.
 - Code is cleanly modularized following Standard Go Project Layout patterns (`cmd/` and `internal/`).
 - No banner data is hardcoded.
@@ -245,6 +277,8 @@ The project is considered complete when:
 - Full support for ASCII 32–126.
 - Clear separation of responsibilities in code structure.
 - All team members can understand and extend the codebase.
+- Docker image size is kept minimal by using a multi-stage build (builder discarded from final image).
+- Container runs as a non-root user in production.
 
 ---
 
@@ -257,6 +291,10 @@ The project is considered complete when:
 | Merge conflicts between team members | Define API contracts early |
 | Output formatting mismatch | Use golden file tests |
 | Terminal size detection failure | Fallback to default width (e.g., 80 chars) |
+| Docker image bloat from build artefacts | Multi-stage build discards the Go toolchain from the runtime image |
+| Container running as root (security risk) | Non-root `appuser` created and enforced via `USER appuser` directive |
+| Missing static assets in container | `COPY --from=builder` explicitly copies `templates/` and `assets/` |
+| Layer cache invalidation on every build | `go.mod` copied before source so dependency layer is cached independently |
 
 ---
 
