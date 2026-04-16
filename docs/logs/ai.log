@@ -24,6 +24,37 @@ Task Expansion: The assistant expanded the previous high-level breakdown into de
 - `tasks/task_03_rendering.md`: Detailed the TDD cycle for the rendering logic and multi-line support (Dev 3).
 
 Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-04-16 User Request: "Update Readme so it matches the project"
+
+AI Assistant Output & Actions:
+
+Documentation Update:
+- Reviewed `docs/logs/ai.log` at the start of the request to follow repository instructions.
+- Reviewed `README.md`, `Dockerfile`, `dockerize.sh`, and `internal/web/service.go` to align the documentation with the implemented project behavior.
+- Updated `README.md` to reflect the finished project state:
+- Added an explicit note that the project uses only standard Go packages.
+- Added the web export and Dockerized deployment features to the feature list.
+- Added the `dockerize.sh` helper workflow to the quick-start and Docker sections.
+- Updated Docker commands and image/container names to match the finalized setup (`ascii-art-web-docker`, `dockerize`).
+- Documented the final runtime container layout (`/app/server`, `/app/templates`, `/app/assets`) and container entrypoint.
+- Documented API behavior and limits including optional color validation, 2000-character text cap, 32 KB JSON body cap, and ANSI-colored API output when `color` is used.
+- Added final web/runtime notes covering newline normalization and blank-line rendering in the web flow.
+
+Verification:
+- Re-read `README.md` after the edit to verify the documentation matches the implemented Docker and web/API behavior.
+- No automated tests were run because the request only changed documentation.
+
+Log Update: Appended this action to `ai.log`.
+Timestamp: 2026-04-16 User Request: "how do i run it to see if it works?"
+
+AI Assistant Output & Actions:
+
+Run Guidance:
+- Reviewed `docs/logs/ai.log` at the start of the request to follow repository instructions.
+- Provided the quickest commands to run the project natively and through Docker.
+- Included the expected local URL (`http://localhost:8080`) and a simple API verification command.
+
+Log Update: Appended this action to `ai.log`.
 Timestamp: 2026-04-16 User Request: "do it "
 
 AI Assistant Output & Actions:

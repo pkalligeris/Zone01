@@ -5,6 +5,8 @@ ASCII Art Generator is a Go project that converts input strings into banner-base
 - a browser-based web interface
 - a JSON API endpoint for programmatic access
 
+The project uses only standard Go packages.
+
 ## Features
 
 - Supports ASCII characters `32..126`
@@ -16,6 +18,8 @@ ASCII Art Generator is a Go project that converts input strings into banner-base
 - Supports alignment with `--align=left|center|right|justify`
 - Provides a web UI for ASCII art generation
 - Provides a JSON API for ASCII art generation
+- Provides `.txt` export from the web interface
+- Provides a Dockerized web deployment workflow
 - Includes unit tests and golden integration tests
 
 ## Authors
@@ -46,6 +50,7 @@ ASCII Art Generator is a Go project that converts input strings into banner-base
 
 - Go `1.21+`
 - Docker (optional, for containerized web deployment)
+- Bash or WSL shell if you want to use `dockerize.sh`
 
 ## Quick Start
 
@@ -71,6 +76,12 @@ Open:
 
 ```text
 http://localhost:8080
+```
+
+Run Docker helper:
+
+```bash
+bash dockerize.sh
 ```
 
 ## CLI Usage
@@ -165,6 +176,7 @@ The web interface supports:
 - manual mode (Generate button submits the form)
 - copy result to clipboard
 - export result as a downloadable `.txt` file
+- browser-friendly color styling without terminal ANSI codes in HTML output
 
 ### Web Routes
 
@@ -206,11 +218,16 @@ curl -X POST http://localhost:8080/api/ascii-art \
 }
 ```
 
+If `color` is provided in the API request, the API returns terminal-style ANSI-colored output in `result`. The HTML route does not embed ANSI codes; it applies color with CSS instead.
+
 ### API Validation
 
 - `text` and `banner` are required
 - `banner` must be one of `standard`, `shadow`, `thinkertoy`
 - `align` is optional; must be one of `left`, `center`, `right`, `justify` if provided
+- `color` is optional; if provided it must be a valid named color, hex, RGB, or HSL value
+- `text` is limited to 2000 characters
+- API request bodies are capped at 32 KB
 - input must stay within ASCII `32..126` plus newline support
 - malformed JSON returns `400 Bad Request`
 
@@ -224,16 +241,22 @@ curl -X POST http://localhost:8080/api/ascii-art \
 
 ## Docker
 
-Build the Docker image:
+Fastest way:
 
 ```bash
-docker build -t ascii-art-web:latest .
+bash dockerize.sh
 ```
 
-Run the container:
+Manual build:
 
 ```bash
-docker run --rm -d -p 8080:8080 --name ascii-art-web ascii-art-web:latest
+docker image build -f Dockerfile -t ascii-art-web-docker .
+```
+
+Manual run:
+
+```bash
+docker container run -d -p 8080:8080 --name dockerize ascii-art-web-docker
 ```
 
 Then open:
@@ -247,27 +270,21 @@ Verify the API from your host:
 ```bash
 curl -s -X POST http://localhost:8080/api/ascii-art \
   -H "Content-Type: application/json" \
-  -d '{"text":"Docker","banner":"standard"}' \
-  | python3 -c "import sys,json; print(json.load(sys.stdin)['result'])"
+  -d '{"text":"Docker","banner":"standard"}'
 ```
 
-Stop the container (if started without `--rm`):
+Inspect the running container:
 
 ```bash
-docker stop ascii-art-web
+docker exec -it dockerize /bin/bash
+cd /app
+ls -l
 ```
 
-Clean up unused Docker objects:
+Stop the project container:
 
 ```bash
-docker image prune -f
-docker container prune -f
-```
-
-Run the helper script:
-
-```bash
-./dockerize.sh
+docker container rm -f dockerize
 ```
 
 Audit-style verification commands:
@@ -293,6 +310,7 @@ Docker notes:
 - The runtime image uses only the compiled web binary plus `templates/` and `assets/`.
 - The container runs as the non-root user `appuser`.
 - The image includes Docker labels for `maintainer`, `version`, and `description`.
+- The container entrypoint is `/app/server`.
 
 ## Testing
 
@@ -323,5 +341,7 @@ The web server and API return HTTP errors for invalid input, missing assets, or 
 - Default banner is `standard` (`assets/banners/standard.txt`)
 - Terminal width for CLI alignment is detected via `tput cols` or `COLUMNS` with fallback `80`
 - The web UI uses browser CSS color styling for rendered output
+- The web layer normalizes Windows and Mac line endings to `\n`
+- Empty lines submitted through the web flow are rendered as full-height blank ASCII rows
 - If rendering logic changes intentionally, regenerate golden files and rerun `go test ./...`
 - In interactive `bash`, prefer single quotes when input contains `!` to avoid history expansion issues
