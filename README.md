@@ -264,6 +264,36 @@ docker image prune -f
 docker container prune -f
 ```
 
+Run the helper script:
+
+```bash
+./dockerize.sh
+```
+
+Audit-style verification commands:
+
+```bash
+docker image build -f Dockerfile -t ascii-art-web-docker .
+docker images
+docker container run -d -p 8080:8080 --name dockerize ascii-art-web-docker
+docker ps -a
+docker exec -it dockerize /bin/bash
+cd /app
+ls -l
+```
+
+Expected runtime layout inside the container:
+
+- `/app/server`
+- `/app/templates`
+- `/app/assets`
+
+Docker notes:
+
+- The runtime image uses only the compiled web binary plus `templates/` and `assets/`.
+- The container runs as the non-root user `appuser`.
+- The image includes Docker labels for `maintainer`, `version`, and `description`.
+
 ## Testing
 
 Run all tests:

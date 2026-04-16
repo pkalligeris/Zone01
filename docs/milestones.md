@@ -43,3 +43,20 @@
 - [x] Task 07: File Output & Integration
     - Implement file writing in `main`.
     - Update integration tests for new features.
+
+## Milestone 6: Web, API, and Delivery Readiness
+**Focus:** Browser Experience, Containerization, and Final Audit Flow
+- [x] Task 10: Web Interface
+    - Browser UI implemented.
+- [x] Task 11: Web Handlers
+    - Form submission and HTTP routing implemented.
+- [x] Task 12: Web Templates
+    - Template rendering and static assets integrated.
+- [x] Task 13: API
+    - JSON API endpoint implemented and tested.
+- [x] Task 14: Export
+    - Downloadable text export implemented.
+- [x] Task 15: Dockerize
+    - Multi-stage Dockerfile implemented and verified.
+- [x] Task 16: Final Audit Readiness
+    - Docker audit flow, helper script, runtime layout, and docs aligned for submission.

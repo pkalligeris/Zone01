@@ -48,6 +48,8 @@ The program must render letters, numbers, spaces, special characters, and newlin
 - Unit testing core logic.
 - Containerising the application with a multi-stage `Dockerfile`.
 - Running the web server as a non-root user inside a minimal Alpine runtime image.
+- Providing a helper script to simplify Docker image build and container run steps for auditors and teammates.
+- Documenting CLI, web, API, and Docker usage clearly for final project review.
 
 ### Out of Scope
 
@@ -207,6 +209,9 @@ Output must match provided examples exactly.
 - **Entry point:** `CMD ["./ascii-art-web"]` starts the web server directly.
 - **Build command:** `docker build -t ascii-art-web .`
 - **Run command:** `docker run --rm -p 8080:8080 ascii-art-web`
+- **Build helper script:** A repository script (for example `dockerize.sh`) may wrap the standard `docker image build` and `docker container run` commands to simplify the audit workflow, but it must still use the same `Dockerfile`.
+- **Runtime filesystem expectation:** The running container must expose the compiled executable and the required runtime directories for templates and static assets so they can be verified with `docker exec`.
+- **Auditor shell expectation:** The runtime image should support `docker exec -it <container> /bin/bash` for manual inspection during evaluation.
 - **Workflow:** Each team member builds and runs their own local container from the shared `Dockerfile`; no pre-built image distribution is required.
 - **`.dockerignore`:** Excludes files that must not be copied into the build context (e.g. `.git`, local binaries, test artefacts).
 
@@ -265,6 +270,10 @@ The project is considered complete when:
 - **Container starts and serves the web interface on port `8080` via `docker run`.**
 - **The process inside the container runs as the non-root `appuser`.**
 - **Image metadata labels (`maintainer`, `version`, `description`) are present on the final image.**
+- **The project uses only standard Go packages.**
+- **A helper build/run script is present for the Docker workflow.**
+- **The container filesystem exposes the executable plus runtime asset directories when inspected with `docker exec`.**
+- **Usage instructions are clear enough for an auditor to test the CLI, web UI, API, and Docker setup without guessing commands.**
 - Unit tests pass.
 - Code is cleanly modularized following Standard Go Project Layout patterns (`cmd/` and `internal/`).
 - No banner data is hardcoded.

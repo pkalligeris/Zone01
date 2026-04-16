@@ -3,6 +3,16 @@
 ## Overview
 The ASCII Art Generator follows the **Standard Go Project Layout**, ensuring scalability, maintainability, and clear separation of concerns. The project provides two entrypoints: a **CLI application** (`cmd/ascii-art`) and a **Web server** (`cmd/ascii-art-web`). Both share the same core packages for banner loading, rendering, and data models.
 
+## Container Runtime
+
+The Docker image is a multi-stage build. The builder stage compiles the Go web binary, while the runtime stage contains only the files required to serve the application during evaluation:
+
+- `/app/server` - compiled web server binary
+- `/app/templates/` - HTML templates
+- `/app/assets/` - static assets and banner files
+
+The final image runs as the non-root user `appuser`, exposes port `8080`, and includes `/bin/bash` so an auditor can inspect the filesystem with `docker exec`.
+
 ## Component Diagram
 
 ```mermaid

@@ -19,8 +19,8 @@ COPY go.mod ./
 COPY . .
 
 # Build a statically-linked binary (CGO disabled) so it runs
-# on the scratch-like Alpine runtime without libc.
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/ascii-art-web ./cmd/ascii-art-web
+# on the minimal Alpine runtime without libc dependencies.
+RUN CGO_ENABLED=0 GOOS=linux go build -o /out/server ./cmd/ascii-art-web
 
 # ============================================================
 # Stage 2 — Runtime (minimal image)
@@ -31,18 +31,21 @@ LABEL maintainer="nbougial,pkallige,ipapigki"
 LABEL version="1.0.0"
 LABEL description="ASCII Art Web — a Go web server that renders ASCII art from text input"
 
+# Install bash for auditor testing (docker exec -it <container> /bin/bash)
+RUN apk add --no-cache bash
+
 # Create a non-root user and group for security best practices
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-WORKDIR /home/appuser
+WORKDIR /app
 
 # Copy only what the runtime needs from the builder stage
-COPY --from=builder /app/ascii-art-web ./ascii-art-web
+COPY --from=builder /out/server ./server
 COPY --from=builder /build/templates   ./templates
 COPY --from=builder /build/assets      ./assets
 
 # Change ownership so the non-root user can read everything
-RUN chown -R appuser:appgroup /home/appuser
+RUN chown -R appuser:appgroup /app
 
 # Switch to non-root user
 USER appuser
@@ -51,4 +54,4 @@ USER appuser
 EXPOSE 8080
 
 # Start the web server
-CMD ["./ascii-art-web"]
+CMD ["./server"]
