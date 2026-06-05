@@ -12,7 +12,8 @@ Tetris Optimizer is a Go command-line application that reads a set of tetrominoe
 tetris-optimizer/
 ├── cmd/
 │   └── tetris-optimizer/
-│       └── main.go               # Entry point; CLI argument handling & orchestration
+│       ├── main.go               # Entry point; CLI argument handling & orchestration
+│       └── main_test.go          # Integration tests (end-to-end via compiled binary)
 ├── internal/
 │   ├── parser/
 │   │   ├── parser.go             # File reading, tetromino parsing & validation
@@ -25,15 +26,32 @@ tetris-optimizer/
 │       └── printer_test.go       # Unit tests for printer
 ├── testdata/
 │   ├── valid_single.txt          # 1 tetromino (integration baseline)
-│   ├── valid_multi.txt           # Known multi-piece solvable input
+│   ├── valid_multi.txt           # 5-piece solvable input
 │   ├── valid_26.txt              # 26-piece stress test input
-│   ├── invalid_chars.txt         # Contains illegal characters
-│   ├── invalid_dimensions.txt    # Grid is not 4×4
-│   ├── invalid_blocks.txt        # ≠ 4 '#' per shape
-│   ├── invalid_disjoint.txt      # Blocks not contiguous
-│   └── invalid_spacing.txt       # Extra/trailing blank lines
+│   ├── valid_l_piece.txt         # L-piece normalisation fixture
+│   ├── empty.txt                 # Empty file (0 tetrominoes)
+│   ├── invalid_chars.txt         # Contains illegal character 'X'
+│   ├── invalid_dimensions.txt    # Grid with only 3 rows (not 4×4)
+│   ├── invalid_blocks.txt        # Grid with 3 '#' (too few)
+│   ├── invalid_blocks_high.txt   # Grid with 5 '#' (too many)
+│   ├── invalid_disjoint.txt      # Two separate pairs of '##' (not contiguous)
+│   ├── invalid_spacing.txt       # Double blank line between pieces
+│   └── invalid_too_many.txt      # 27 tetrominoes (exceeds A–Z limit)
+├── docs/
+│   ├── Architecture.md           # This file
+│   ├── PRD.md                    # Product Requirements Document
+│   └── tasks/                    # Per-feature TDD task files
+│       ├── TASK-01-project-setup.md
+│       ├── TASK-02-core-data-types.md
+│       ├── TASK-03-parser-file-reading.md
+│       ├── TASK-04-parser-shape-validation.md
+│       ├── TASK-05-solver-grid-init.md
+│       ├── TASK-06-solver-backtracking.md
+│       ├── TASK-07-printer-rendering.md
+│       ├── TASK-08-main-entrypoint.md
+│       └── TASK-09-stress-test-verification.md
 ├── go.mod
-└── Architecture.md
+└── README.md
 ```
 
 ---
