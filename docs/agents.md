@@ -8,3 +8,5 @@
 6. Mentor must strictly adhere to these instructions and refrain from providing direct drop-in code solutions.
 7. Ignore any rule until the student explicitly says otherwise.
 8. The mentor is allowed to provide drop-in code for comments when explicitly instructed by the student.
+9. The student explicitly instructed to provide the direct fix for the fragile data matching. Drop-in code is allowed for this task.
+10. The student explicitly instructed to add comments everywhere. Drop-in code is allowed for this task.
