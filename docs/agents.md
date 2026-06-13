@@ -19,3 +19,7 @@
 17. The student instructed the mentor to make the code changes directly.
 18. The student instructed the mentor to add comments everywhere.
 19. The student instructed the mentor to commit the changes using conventional commits.
+20. The student asked what can be improved in the codebase.
+21. The student asked for an explanation of improvement no 4 (dependency injection / removing package-level globals).
+22. The student instructed the mentor to add comments in every file of the project.
+23. The student instructed the mentor to commit the comment changes.
