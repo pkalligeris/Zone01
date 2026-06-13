@@ -10,3 +10,12 @@
 8. The mentor is allowed to provide drop-in code for comments when explicitly instructed by the student.
 9. The student explicitly instructed to provide the direct fix for the fragile data matching. Drop-in code is allowed for this task.
 10. The student explicitly instructed to add comments everywhere. Drop-in code is allowed for this task.
+11. The student instructed the mentor to check the current project in the current workspace.
+12. The student asked what the bottleneck of the program is.
+13. The student instructed the mentor to fix bottleneck no2 (repeated string parsing and allocation).
+14. The student asked if it is bad to apply the filters in the backend.
+15. The student asked what the best approach is for this project.
+16. The student instructed the mentor to optimize bottleneck no2.
+17. The student instructed the mentor to make the code changes directly.
+18. The student instructed the mentor to add comments everywhere.
+19. The student instructed the mentor to commit the changes using conventional commits.
