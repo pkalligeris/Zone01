@@ -23,3 +23,6 @@
 21. The student asked for an explanation of improvement no 4 (dependency injection / removing package-level globals).
 22. The student instructed the mentor to add comments in every file of the project.
 23. The student instructed the mentor to commit the comment changes.
+24. The student asked for an explanation of the creation date and first album year filtering condition code.
+25. The student asked for an explanation of the member count filtering condition code.
+26. The student asked for an explanation of the template parsing and execution code in artistHandler.
