@@ -178,7 +178,7 @@ func TestSolve_MultiPiece(t *testing.T) {
 
 // TestSolve_MyTest verifies the solver handles mytest.txt correctly.
 func TestSolve_MyTest(t *testing.T) {
-	pieces, err := parser.Parse("../../mytest.txt")
+	pieces, err := parser.Parse("../../testdata/valid_multi.txt")
 	if err != nil {
 		t.Fatalf("Parse returned error: %v", err)
 	}
