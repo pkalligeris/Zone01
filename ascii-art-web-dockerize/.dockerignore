@@ -1,0 +1,29 @@
+# Version control
+.git
+.gitignore
+
+# IDE / editor
+.vscode
+.kilocode
+
+# Documentation & logs (not needed at runtime)
+docs/
+AGENTS.md
+README.md
+README_WEB.md
+LICENSE
+Makefile
+
+# Tests & golden files (not needed at runtime)
+test/
+*_test.go
+
+# CLI entrypoint (web image only)
+cmd/ascii-art/
+
+# Docker files (avoid recursive context)
+Dockerfile
+.dockerignore
+
+# OS junk
+*.Zone.Identifier

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Art Generator</title>
+    <link rel="stylesheet" href="/assets/style.css?v=2">
+</head>
+
+<body>
+    <input type="radio" name="theme-toggle" id="theme-dark" value="dark" style="display: none;" checked>
+    <input type="radio" name="theme-toggle" id="theme-light" value="light" style="display: none;">
+
+    <!-- this is the main container for the ascii art generator -->
+    <div class="container">
+        <h1>ASCII Art Generator</h1>
+        <p class="description">
+            Type any text and watch it transform into ASCII art instantly.
+        </p>
+        <div style="margin-bottom: 1rem;">
+            <button type="button" id="modeToggleBtn">Switch to Manual Mode</button>
+        </div>
+        <form method="POST" action="/ascii-art">
+            <div class="form-group">
+                <textarea id="text" name="text" rows="4" placeholder="Type your text here..."
+                    maxlength="2000" required>{{.Input}}</textarea>
+                <div class="textarea-footer">
+                    <span class="accepted-chars">Letters, numbers, and basic punctuation</span>
+                    <span class="char-counter" id="charCounter">0/2000</span>
+                </div>
+            </div>
+
+            <!-- this is the controls group for the ascii art generator -->
+            <div class="controls-group">
+                <div class="form-group">
+                    <label>Select Banner:</label>
+                    <div class="banner-options">
+                        <label><input type="radio" name="banner" value="standard" {{if eq .Banner "standard"
+                                }}checked{{end}} required> Standard</label>
+                        <label><input type="radio" name="banner" value="shadow" {{if eq .Banner "shadow"
+                                }}checked{{end}}>
+                            Shadow</label>
+                        <label><input type="radio" name="banner" value="thinkertoy" {{if eq .Banner "thinkertoy"
+                                }}checked{{end}}> Thinkertoy</label>
+                    </div>
+                </div>
+
+                <!-- Background Theme Picker -->
+                <div class="form-group">
+                    <label>Output Background:</label>
+                    <div class="bg-toggle-group">
+                        <label for="theme-dark" class="bg-btn btn-dark-label">Dark Background</label>
+                        <label for="theme-light" class="bg-btn btn-light-label">Light Background</label>
+                    </div>
+                </div>
+
+                <!-- Color Picker -->
+                <div class="color-picker-group">
+                    <label>Pick a Color:</label>
+                    <div class="color-picker-wrapper">
+                        <div class="wheel-row">
+                            <div class="wheel-container">
+                                <canvas id="colorWheel" width="140" height="140"></canvas>
+                                <div class="wheel-cursor" id="wheelCursor"></div>
+                            </div>
+                            <div class="lightness-slider-group">
+                                <input type="range" id="lightnessSlider" min="10" max="90" value="50">
+                            </div>
+                        </div>
+                        <div class="color-preview-row">
+                            <div id="colorSwatch"></div>
+                            <input type="text" id="colorHex" value="#e0e0e0" readonly>
+                            <button type="button" class="btn-reset-color" id="resetColorBtn">Reset</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="color" id="colorInput" value="{{.Color}}">
+                </div>
+            </div>
+
+            <button type="submit" id="generateBtn" style="display: none;">Generate</button>
+        </form>
+
+        <div class="result" id="errorContainer" {{if not .Error}}style="display: none;"{{end}}>
+            <div class="error" id="errorOutput">{{.Error}}</div>
+        </div>
+
+        <div class="result" id="asciiResultContainer" {{if not .Result}}style="display: none;"{{end}}>
+            <button type="button" class="btn-copy" id="copyBtn">Copy</button>
+            <button type="button" class="btn-copy" id="exportBtn" style="right: 70px;">Export</button>
+            <pre id="asciiOutput" {{if .Color}}style="color: {{.Color}};"{{end}}>{{.Result}}</pre>
+        </div>
+    </div>
+
+    <script>
+
+        // this function is for the color wheel
+        // it is a canvas element that is used to pick a color
+        (function () {
+            const canvas = document.getElementById('colorWheel');
+            const ctx = canvas.getContext('2d');
+            const cursor = document.getElementById('wheelCursor');
+            const swatch = document.getElementById('colorSwatch');
+            const hexDisplay = document.getElementById('colorHex');
+            const lightnessSlider = document.getElementById('lightnessSlider');
+            const colorInput = document.getElementById('colorInput');
+            const resetBtn = document.getElementById('resetColorBtn');
+            const asciiOutput = document.getElementById('asciiOutput');
+            const copyBtn = document.getElementById('copyBtn');
+
+            const themeDark = document.getElementById('theme-dark');
+            const themeLight = document.getElementById('theme-light');
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = canvas.width / 2 - 2;
+
+            let currentHue = 0;
+            let currentSat = 0;
+            let lightness = 50;
+            let colorActive = false;
+
+            const DEFAULT_COLOR = '#e0e0e0';
+
+            // this function is for the color wheel
+            function drawWheel() {
+                const imageData = ctx.createImageData(canvas.width, canvas.height);
+                const data = imageData.data;
+
+                for (let y = 0; y < canvas.height; y++) {
+                    for (let x = 0; x < canvas.width; x++) {
+                        const dx = x - centerX;
+                        const dy = y - centerY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        const idx = (y * canvas.width + x) * 4;
+
+                        if (dist <= radius) {
+                            const angle = Math.atan2(dy, dx);
+                            const hue = ((angle * 180 / Math.PI) + 360) % 360;
+                            const sat = (dist / radius) * 100;
+                            const rgb = hslToRgb(hue, sat, lightness);
+                            data[idx] = rgb[0];
+                            data[idx + 1] = rgb[1];
+                            data[idx + 2] = rgb[2];
+                            data[idx + 3] = 255;
+                        } else if (dist <= radius + 1.5) {
+                            // Anti-aliased edge
+                            const alpha = Math.max(0, 1 - (dist - radius) / 1.5);
+                            const angle = Math.atan2(dy, dx);
+                            const hue = ((angle * 180 / Math.PI) + 360) % 360;
+                            const sat = 100;
+                            const rgb = hslToRgb(hue, sat, lightness);
+                            data[idx] = rgb[0];
+                            data[idx + 1] = rgb[1];
+                            data[idx + 2] = rgb[2];
+                            data[idx + 3] = Math.round(alpha * 255);
+                        } else {
+                            data[idx + 3] = 0;
+                        }
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+            }
+
+            // this function is for the color wheel
+            function hslToRgb(h, s, l) {
+                s /= 100;
+                l /= 100;
+                const c = (1 - Math.abs(2 * l - 1)) * s;
+                const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+                const m = l - c / 2;
+                let r, g, b;
+                if (h < 60) { r = c; g = x; b = 0; }
+                else if (h < 120) { r = x; g = c; b = 0; }
+                else if (h < 180) { r = 0; g = c; b = x; }
+                else if (h < 240) { r = 0; g = x; b = c; }
+                else if (h < 300) { r = x; g = 0; b = c; }
+                else { r = c; g = 0; b = x; }
+                return [
+                    Math.round((r + m) * 255),
+                    Math.round((g + m) * 255),
+                    Math.round((b + m) * 255)
+                ];
+            }
+
+            // this function is for the color wheel
+            function rgbToHex(r, g, b) {
+                return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+            }
+
+            // this function is for the color wheel
+            function updateColor(hex) {
+                swatch.style.background = hex;
+                hexDisplay.value = hex;
+                colorInput.value = hex;
+                if (asciiOutput) {
+                    asciiOutput.style.color = hex;
+                }
+            }
+
+            // this function is for the color wheel 
+            function pickColorAt(x, y) {
+                const dx = x - centerX;
+                const dy = y - centerY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist > radius) return;
+
+                colorActive = true;
+                currentHue = ((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360;
+                currentSat = (dist / radius) * 100;
+
+                const rgb = hslToRgb(currentHue, currentSat, lightness);
+                const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+
+                cursor.style.display = 'block';
+                cursor.style.left = x + 'px';
+                cursor.style.top = y + 'px';
+
+                updateColor(hex);
+            }
+
+            // this function is for the cursor position
+            function repositionCursor() {
+                if (!colorActive) return;
+                const dist = (currentSat / 100) * radius;
+                const angle = currentHue * Math.PI / 180;
+                const x = centerX + dist * Math.cos(angle);
+                const y = centerY + dist * Math.sin(angle);
+                cursor.style.left = x + 'px';
+                cursor.style.top = y + 'px';
+
+                const rgb = hslToRgb(currentHue, currentSat, lightness);
+                const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+                updateColor(hex);
+            }
+
+            // this function is for the color wheel
+            function getCanvasCoords(e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                return {
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY
+                };
+            }
+
+            let dragging = false;
+
+            canvas.addEventListener('mousedown', function (e) {
+                dragging = true;
+                const coords = getCanvasCoords(e);
+                pickColorAt(coords.x, coords.y);
+            });
+
+            canvas.addEventListener('mousemove', function (e) {
+                if (!dragging) return;
+                const coords = getCanvasCoords(e);
+                pickColorAt(coords.x, coords.y);
+            });
+
+            document.addEventListener('mouseup', function () {
+                dragging = false;
+            });
+
+            // Touch support
+            canvas.addEventListener('touchstart', function (e) {
+                e.preventDefault();
+                dragging = true;
+                const touch = e.touches[0];
+                const coords = getCanvasCoords(touch);
+                pickColorAt(coords.x, coords.y);
+            }, { passive: false });
+
+            canvas.addEventListener('touchmove', function (e) {
+                e.preventDefault();
+                if (!dragging) return;
+                const touch = e.touches[0];
+                const coords = getCanvasCoords(touch);
+                pickColorAt(coords.x, coords.y);
+            }, { passive: false });
+
+            canvas.addEventListener('touchend', function () {
+                dragging = false;
+            });
+
+            lightnessSlider.addEventListener('input', function () {
+                lightness = parseInt(this.value);
+                drawWheel();
+                repositionCursor();
+
+                // Update slider track gradient
+                const hue = colorActive ? currentHue : 0;
+                const sat = colorActive ? currentSat : 0;
+                this.style.background = `linear-gradient(to right,
+                hsl(${hue}, ${sat}%, 10%),
+                hsl(${hue}, ${sat}%, 50%),
+                hsl(${hue}, ${sat}%, 90%))`;
+            });
+
+            resetBtn.addEventListener('click', function () {
+                colorActive = false;
+                cursor.style.display = 'none';
+                lightness = 50;
+                lightnessSlider.value = 50;
+                lightnessSlider.style.background = 'linear-gradient(to right, #1a1a1a, #808080, #e5e5e5)';
+                updateColor(DEFAULT_COLOR);
+                drawWheel();
+            });
+
+            // Initialize
+            drawWheel();
+
+            // Restore color from previous submission
+            const savedColor = colorInput.value;
+            if (savedColor && savedColor !== '' && savedColor !== DEFAULT_COLOR) {
+                updateColor(savedColor);
+            } else {
+                lightnessSlider.style.background = 'linear-gradient(to right, #1a1a1a, #808080, #e5e5e5)';
+            }
+
+            // Apply saved color to output on load
+            if (asciiOutput && savedColor && savedColor !== '') {
+                asciiOutput.style.color = savedColor;
+            }
+
+            // Background Theme Logic (Pure CSS toggle state restoration)
+            if (themeDark && themeLight) {
+                const savedTheme = localStorage.getItem('asciiBgTheme') || 'dark';
+                if (savedTheme === 'light') {
+                    themeLight.checked = true;
+                } else {
+                    themeDark.checked = true;
+                }
+                themeDark.addEventListener('change', () => localStorage.setItem('asciiBgTheme', 'dark'));
+                themeLight.addEventListener('change', () => localStorage.setItem('asciiBgTheme', 'light'));
+            }
+
+            // this function is for the copy button
+            if (copyBtn && asciiOutput) {
+                copyBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(asciiOutput.innerText).then(() => {
+                        const originalText = copyBtn.innerText;
+                        copyBtn.innerText = 'Copied!';
+                        setTimeout(() => {
+                            copyBtn.innerText = originalText;
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                });
+            }
+            // Live Rendering logic
+            const textInput = document.getElementById('text');
+            const errorContainer = document.getElementById('errorContainer');
+            const errorOutput = document.getElementById('errorOutput');
+            const asciiResultContainer = document.getElementById('asciiResultContainer');
+            const charCounter = document.getElementById('charCounter');
+            
+            function updateCharCount() {
+                if (charCounter && textInput) {
+                    charCounter.innerText = `${textInput.value.length}/2000`;
+                }
+            }
+            
+            let fetchTimeout;
+            async function fetchAsciiLive() {
+                const text = textInput.value;
+                const bannerEl = document.querySelector('input[name="banner"]:checked');
+                const banner = bannerEl ? bannerEl.value : 'standard';
+                
+                if (!text.trim()) {
+                    errorContainer.style.display = 'none';
+                    asciiResultContainer.style.display = 'none';
+                    // clear the output if there's no text
+                    if(asciiOutput) asciiOutput.innerText = '';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/ascii-art', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: text, banner: banner, color: "" })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        errorOutput.innerText = data.error || 'Failed to render';
+                        errorContainer.style.display = 'block';
+                        asciiResultContainer.style.display = 'none';
+                    } else {
+                        asciiOutput.innerText = data.result;
+                        // The color is applied by the browser via CSS styling on the pre tag
+                        const currentColor = colorInput.value;
+                        if (currentColor && currentColor !== '') {
+                            asciiOutput.style.color = currentColor;
+                        }
+                        
+                        errorContainer.style.display = 'none';
+                        asciiResultContainer.style.display = 'block';
+                    }
+                } catch (err) {
+                    errorOutput.innerText = 'Network error: ' + err.message;
+                    errorContainer.style.display = 'block';
+                    asciiResultContainer.style.display = 'none';
+                }
+            }
+            
+            function handleInput() {
+                updateCharCount();
+                clearTimeout(fetchTimeout);
+                fetchTimeout = setTimeout(fetchAsciiLive, 50); // fast 50ms debounce
+            }
+            
+            textInput.addEventListener('input', handleInput);
+            document.querySelectorAll('input[name="banner"]').forEach(radio => {
+                radio.addEventListener('change', fetchAsciiLive);
+            });
+            // Export button logic — submits a hidden form to /export
+            const exportBtn = document.getElementById('exportBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => {
+                    const text = textInput.value;
+                    if (!text.trim()) return;
+                    const bannerEl = document.querySelector('input[name="banner"]:checked');
+                    const bannerVal = bannerEl ? bannerEl.value : 'standard';
+
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/export';
+                    form.style.display = 'none';
+
+                    const tInput = document.createElement('input');
+                    tInput.type = 'hidden';
+                    tInput.name = 'text';
+                    tInput.value = text;
+                    form.appendChild(tInput);
+
+                    const bInput = document.createElement('input');
+                    bInput.type = 'hidden';
+                    bInput.name = 'banner';
+                    bInput.value = bannerVal;
+                    form.appendChild(bInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                    document.body.removeChild(form);
+                });
+            }
+
+            // Initialize the counter on page load
+            updateCharCount();
+
+            // Mode toggle logic
+            const generateBtn = document.getElementById('generateBtn');
+            const modeToggleBtn = document.getElementById('modeToggleBtn');
+            let liveMode = true;
+
+            modeToggleBtn.addEventListener('click', () => {
+                liveMode = !liveMode;
+                if (liveMode) {
+                    modeToggleBtn.innerText = 'Switch to Manual Mode';
+                    generateBtn.style.display = 'none';
+                    // re-attach live rendering
+                    textInput.addEventListener('input', handleInput);
+                    document.querySelectorAll('input[name="banner"]').forEach(radio => {
+                        radio.addEventListener('change', fetchAsciiLive);
+                    });
+                    fetchAsciiLive();
+                } else {
+                    modeToggleBtn.innerText = 'Switch to Live Mode';
+                    generateBtn.style.display = '';
+                    // detach live rendering
+                    clearTimeout(fetchTimeout);
+                    textInput.removeEventListener('input', handleInput);
+                    document.querySelectorAll('input[name="banner"]').forEach(radio => {
+                        radio.removeEventListener('change', fetchAsciiLive);
+                    });
+                }
+            });
+
+        })();
+    </script>
+</body>
+
+</html>
