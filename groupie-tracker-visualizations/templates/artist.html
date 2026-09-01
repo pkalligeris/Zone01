@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{.Title}}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <script src="/static/javascript/map.js" defer></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <h1 class="site-title">Groupie Tracker</h1>
+  </header>
+  <!-- Main content area containing artist details -->
+  <main class="detail-main">
+    <a href="/" class="back-link">← Back to Artists</a>
+
+    <!-- Hero section with artist image, name, and meta information -->
+    <div class="detail-hero">
+      <img class="hero-image" src="{{.Artist.Image}}" alt="{{.Artist.Name}}">
+      <div class="hero-info">
+        <h1 class="hero-name">{{.Artist.Name}}</h1>
+        <p class="hero-meta">Started in {{.Artist.CreationDate}} • First Album: {{.Artist.FirstAlbum}}</p>
+      </div>
+    </div>
+
+    <!-- Members section displaying list of band members -->
+    <section>
+      <h2 class="section-title">Members</h2>
+      <ul class="members-list">
+        {{range .Artist.Members}}
+        <li>{{.}}</li>
+        {{end}}
+      </ul>
+    </section>
+
+    <!-- Concert locations section rendering Leaflet map and chronological timeline -->
+    <section>
+      <h2 class="section-title">Concert Locations</h2>
+      
+      <!-- Interactive map and dynamic timeline container -->
+      <div class="map-and-timeline">
+        <div id="map" class="map-container"></div>
+        <div id="timeline" class="timeline-container">
+          <h3 class="timeline-title">Chronological Path</h3>
+          <ul id="timeline-list" class="timeline-list"></ul>
+        </div>
+      </div>
+
+      <!-- Hidden original location and dates data structure. 
+           This is read by static/javascript/map.js to avoid passing complex JSON from Go. -->
+      <div style="display: none;"> 
+        {{range $loc, $dates := .Artist.Relations}}
+        <div class="relation-item">
+          <h3 class="relation-location">{{$loc}}</h3>
+          <ul class="relation-dates">
+            {{range $dates}}<li>{{.}}</li>{{end}}
+          </ul>
+        </div>
+        {{end}}
+      </div>
+    </section>
+  </main>
+</body>
+
+</html>
